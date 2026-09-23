@@ -11,8 +11,8 @@ use ascalon_asset::{
 use bevy::{
     app::{App, Plugin},
     asset::{
-        AssetApp, AssetLoader, LoadContext, RenderAssetUsages,
-        io::{AssetReaderError, AssetSourceBuilder, PathStream, Reader, VecReader},
+        Asset, AssetApp, AssetLoader, LoadContext, RenderAssetUsages,
+        io::{AssetReaderError, AssetSourceBuilder, AssetSourceId, PathStream, Reader, VecReader},
     },
     image::Image,
     reflect::TypePath,
@@ -24,21 +24,13 @@ pub struct AssetSourcePlugin;
 impl Plugin for AssetSourcePlugin {
     fn build(&self, app: &mut App) {
         app.register_asset_source(
-            "gw2",
+            AssetSourceId::Default,
             AssetSourceBuilder::new(|| {
                 Box::new(AssetReader(
                     Archive::open("C:\\Program Files\\Guild Wars 2\\Gw2.dat").unwrap(),
                 ))
             }),
         );
-    }
-}
-
-pub struct AssetLoaderPlugin;
-
-impl Plugin for AssetLoaderPlugin {
-    fn build(&self, app: &mut App) {
-        app.init_asset_loader::<ImageLoader>();
     }
 }
 
@@ -75,6 +67,16 @@ impl bevy::asset::io::AssetReader for AssetReader {
         path: &'a std::path::Path,
     ) -> Result<bool, AssetReaderError> {
         Err(AssetReaderError::NotFound(path.to_path_buf()))
+    }
+}
+
+pub struct AssetLoaderPlugin;
+
+impl Plugin for AssetLoaderPlugin {
+    fn build(&self, app: &mut App) {
+        app.init_asset_loader::<ImageLoader>()
+            .init_asset::<Packfile>()
+            .init_asset_loader::<PackfileLoader>();
     }
 }
 
@@ -168,5 +170,28 @@ impl AssetLoader for ImageLoader {
         image.texture_descriptor.mip_level_count = mip_level_count;
 
         Ok(image)
+    }
+}
+
+#[derive(Asset, TypePath)]
+pub struct Packfile(pub ascalon_asset::packfile::Packfile);
+
+#[derive(Default, TypePath)]
+struct PackfileLoader;
+
+impl AssetLoader for PackfileLoader {
+    type Asset = Packfile;
+    type Settings = ();
+    type Error = std::io::Error;
+
+    async fn load(
+        &self,
+        reader: &mut dyn Reader,
+        _settings: &Self::Settings,
+        _load_context: &mut LoadContext<'_>,
+    ) -> Result<Self::Asset, Self::Error> {
+        let mut buf = Vec::new();
+        reader.read_to_end(&mut buf).await?;
+        Ok(Packfile(ascalon_asset::packfile::Packfile::new(buf)?))
     }
 }

@@ -6,13 +6,14 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+uuid = "1"
 zerocopy = "0.8"
 
 bevy = { git = "https://github.com/bevyengine/bevy.git", rev = "1a6377e33b26b6d744f96e35dbe9392e86602ac3" }
 
-ascalon-asset = { git = "https://github.com/valaphee/ascalon.git", rev = "dfab966c60b2e252503ea88e480f82d6d9a92cf8" }
-ascalon-network = { git = "https://github.com/valaphee/ascalon.git", rev = "dfab966c60b2e252503ea88e480f82d6d9a92cf8" }
-ascalon-protocol = { git = "https://github.com/valaphee/ascalon.git", rev = "dfab966c60b2e252503ea88e480f82d6d9a92cf8" }
+ascalon-asset = { git = "https://github.com/valaphee/ascalon.git", rev = "0baf44a696533733d0768120b312683a48a8e106" }
+ascalon-network = { git = "https://github.com/valaphee/ascalon.git", rev = "0baf44a696533733d0768120b312683a48a8e106" }
+ascalon-protocol = { git = "https://github.com/valaphee/ascalon.git", rev = "0baf44a696533733d0768120b312683a48a8e106" }
 
 [profile.dev]
 opt-level = 1
