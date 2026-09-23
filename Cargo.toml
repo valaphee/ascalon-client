@@ -1,0 +1,25 @@
+cargo-features = ["panic-immediate-abort"]
+
+[package]
+name = "ascalon-client"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+zerocopy = "0.8"
+
+bevy = { git = "https://github.com/bevyengine/bevy.git", rev = "1a6377e33b26b6d744f96e35dbe9392e86602ac3" }
+
+ascalon-asset = { git = "https://github.com/valaphee/ascalon.git", rev = "dfab966c60b2e252503ea88e480f82d6d9a92cf8" }
+ascalon-network = { git = "https://github.com/valaphee/ascalon.git", rev = "dfab966c60b2e252503ea88e480f82d6d9a92cf8" }
+ascalon-protocol = { git = "https://github.com/valaphee/ascalon.git", rev = "dfab966c60b2e252503ea88e480f82d6d9a92cf8" }
+
+[profile.dev]
+opt-level = 1
+
+[profile.dev.package."*"]
+opt-level = 3
+
+[profile.release]
+panic = "immediate-abort"
+codegen-units = 1
