@@ -1,5 +1,6 @@
 use std::{
     io::{ErrorKind, Read},
+    os::windows::ffi::OsStrExt,
     path::Path,
 };
 
@@ -38,13 +39,8 @@ struct AssetReader(Archive);
 
 impl bevy::asset::io::AssetReader for AssetReader {
     async fn read<'a>(&'a self, path: &'a Path) -> Result<VecReader, AssetReaderError> {
-        let stem = path
-            .file_stem()
-            .and_then(|v| v.to_str())
-            .ok_or_else(|| AssetReaderError::NotFound(path.to_path_buf()))?;
-        let mut words = stem.encode_utf16();
-        let id = file_name_to_id(&[words.next().unwrap(), words.next().unwrap(), 0x0000]).unwrap();
-
+        let mut words = path.as_os_str().encode_wide();
+        let id = file_name_to_id(&[words.next().unwrap(), words.next().unwrap()]).unwrap();
         Ok(VecReader::new(self.0.read(id)?))
     }
 
@@ -99,6 +95,12 @@ impl AssetLoader for ImageLoader {
 
         let mut bytes = buf.as_slice();
         let magic = bytes.read_array::<4>()?;
+        if !matches!(
+            &magic,
+            b"ATEX" | b"ATTX" | b"ATEC" | b"ATEP" | b"ATET" | b"ATEU"
+        ) {
+            return Err(ErrorKind::InvalidData.into());
+        }
 
         let format_raw = bytes.read_array::<4>()?;
         let (format, format_flags) = match &format_raw {
@@ -106,10 +108,10 @@ impl AssetLoader for ImageLoader {
                 TextureFormat::Bc1RgbaUnorm,
                 FF_COLOR | FF_ALPHA | FF_DEDUCED_ALPHA,
             ),
-            b"DXT3" => (TextureFormat::Bc2RgbaUnorm, FF_COLOR | FF_ALPHA | FF_PLAIN),
-            b"DXT5" => (TextureFormat::Bc3RgbaUnorm, FF_COLOR | FF_ALPHA | FF_PLAIN),
+            b"DXT2" | b"DXT3" => (TextureFormat::Bc2RgbaUnorm, FF_COLOR | FF_ALPHA | FF_PLAIN),
+            b"DXT4" | b"DXT5" => (TextureFormat::Bc3RgbaUnorm, FF_COLOR | FF_ALPHA | FF_PLAIN),
             b"DXTA" => (TextureFormat::Bc4RUnorm, FF_ALPHA | FF_PLAIN),
-            b"3DCX" => (TextureFormat::Bc5RgUnorm, FF_BICOLOR),
+            b"DXTN" | b"3DCX" | b"BC5X" => (TextureFormat::Bc5RgUnorm, FF_BICOLOR),
             b"BC7X" => (TextureFormat::Bc7RgbaUnorm, FF_COLOR | FF_ALPHA | FF_PLAIN),
             _ => return Err(ErrorKind::InvalidData.into()),
         };

@@ -9,6 +9,7 @@ use crate::{
 
 mod asset;
 mod content;
+mod strings;
 
 fn main() {
     App::new()

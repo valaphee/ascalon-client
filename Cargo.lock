@@ -298,9 +298,13 @@ checksum = "175571dd1d178ced59193a6fc02dde1b972eb0bc56c892cde9beeceac5bf0f6b"
 [[package]]
 name = "ascalon-asset"
 version = "0.1.0"
-source = "git+https://github.com/valaphee/ascalon.git?rev=0baf44a696533733d0768120b312683a48a8e106#0baf44a696533733d0768120b312683a48a8e106"
+source = "git+https://github.com/valaphee/ascalon.git?rev=d98de219c8881f2182e93e73f3af47aa0370a958#d98de219c8881f2182e93e73f3af47aa0370a958"
 dependencies = [
+ "ascalon-packfile-schema",
+ "proc-macro2",
+ "quote",
  "rc4",
+ "syn 2.0.119",
  "zerocopy",
 ]
 
@@ -319,7 +323,7 @@ dependencies = [
 [[package]]
 name = "ascalon-network"
 version = "0.1.0"
-source = "git+https://github.com/valaphee/ascalon.git?rev=0baf44a696533733d0768120b312683a48a8e106#0baf44a696533733d0768120b312683a48a8e106"
+source = "git+https://github.com/valaphee/ascalon.git?rev=d98de219c8881f2182e93e73f3af47aa0370a958#d98de219c8881f2182e93e73f3af47aa0370a958"
 dependencies = [
  "bytes",
  "lz4_flex",
@@ -328,9 +332,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "ascalon-packfile-schema"
+version = "0.1.0"
+source = "git+https://github.com/valaphee/ascalon.git?rev=d98de219c8881f2182e93e73f3af47aa0370a958#d98de219c8881f2182e93e73f3af47aa0370a958"
+dependencies = [
+ "quick-xml 0.42.0",
+]
+
+[[package]]
 name = "ascalon-protocol"
 version = "0.1.0"
-source = "git+https://github.com/valaphee/ascalon.git?rev=0baf44a696533733d0768120b312683a48a8e106#0baf44a696533733d0768120b312683a48a8e106"
+source = "git+https://github.com/valaphee/ascalon.git?rev=d98de219c8881f2182e93e73f3af47aa0370a958#d98de219c8881f2182e93e73f3af47aa0370a958"
 dependencies = [
  "ascalon-protocol-schema",
  "bytes",
@@ -340,7 +352,7 @@ dependencies = [
 [[package]]
 name = "ascalon-protocol-schema"
 version = "0.1.0"
-source = "git+https://github.com/valaphee/ascalon.git?rev=0baf44a696533733d0768120b312683a48a8e106#0baf44a696533733d0768120b312683a48a8e106"
+source = "git+https://github.com/valaphee/ascalon.git?rev=d98de219c8881f2182e93e73f3af47aa0370a958#d98de219c8881f2182e93e73f3af47aa0370a958"
 dependencies = [
  "quick-xml 0.42.0",
 ]
