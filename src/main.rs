@@ -1,10 +1,11 @@
-#![feature(read_array, read_le)]
+#![feature(f16, read_array, read_le)]
 
 use bevy::prelude::*;
 
 use crate::{
     asset::{AssetLoaderPlugin, AssetSourcePlugin},
     content::ContentPlugin,
+    strings::StringsPlugin,
 };
 
 mod asset;
@@ -18,6 +19,7 @@ fn main() {
             DefaultPlugins,
             AssetLoaderPlugin,
             ContentPlugin,
+            StringsPlugin,
         ))
         .run();
 }

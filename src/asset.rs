@@ -1,8 +1,4 @@
-use std::{
-    io::{ErrorKind, Read},
-    os::windows::ffi::OsStrExt,
-    path::Path,
-};
+use std::{io::Read as _, os::windows::ffi::OsStrExt as _, path::Path};
 
 use ascalon_asset::{
     archive::Archive,
@@ -16,6 +12,7 @@ use bevy::{
         io::{AssetReaderError, AssetSourceBuilder, AssetSourceId, PathStream, Reader, VecReader},
     },
     image::Image,
+    mesh::Mesh,
     reflect::TypePath,
     render::render_resource::{Extent3d, TextureDimension, TextureFormat},
 };
@@ -39,9 +36,11 @@ struct AssetReader(Archive);
 
 impl bevy::asset::io::AssetReader for AssetReader {
     async fn read<'a>(&'a self, path: &'a Path) -> Result<VecReader, AssetReaderError> {
-        let mut words = path.as_os_str().encode_wide();
-        let id = file_name_to_id(&[words.next().unwrap(), words.next().unwrap()]).unwrap();
-        Ok(VecReader::new(self.0.read(id)?))
+        let mut file_name = path.as_os_str().encode_wide();
+        let file_id =
+            file_name_to_id(&[file_name.next().unwrap(), file_name.next().unwrap()]).unwrap();
+
+        Ok(VecReader::new(self.0.read(file_id)?))
     }
 
     async fn read_meta<'a>(
@@ -70,9 +69,33 @@ pub struct AssetLoaderPlugin;
 
 impl Plugin for AssetLoaderPlugin {
     fn build(&self, app: &mut App) {
-        app.init_asset_loader::<ImageLoader>()
-            .init_asset::<Packfile>()
-            .init_asset_loader::<PackfileLoader>();
+        app.init_asset::<Packfile>()
+            .init_asset_loader::<PackfileLoader>()
+            .init_asset_loader::<ImageLoader>()
+            .init_asset_loader::<ModelLoader>();
+    }
+}
+
+#[derive(Asset, TypePath)]
+pub struct Packfile(pub ascalon_asset::packfile::Packfile);
+
+#[derive(Default, TypePath)]
+struct PackfileLoader;
+
+impl AssetLoader for PackfileLoader {
+    type Asset = Packfile;
+    type Settings = ();
+    type Error = std::io::Error;
+
+    async fn load(
+        &self,
+        reader: &mut dyn Reader,
+        _settings: &Self::Settings,
+        _load_context: &mut LoadContext<'_>,
+    ) -> Result<Self::Asset, Self::Error> {
+        let bytes = std::mem::take(&mut unsafe { assume_vec_reader(reader) }.bytes);
+
+        Ok(Packfile(ascalon_asset::packfile::Packfile::new(bytes)?))
     }
 }
 
@@ -90,20 +113,19 @@ impl AssetLoader for ImageLoader {
         _settings: &Self::Settings,
         _load_context: &mut LoadContext<'_>,
     ) -> Result<Self::Asset, Self::Error> {
-        let mut buf = Vec::new();
-        reader.read_to_end(&mut buf).await?;
+        let bytes = std::mem::take(&mut unsafe { assume_vec_reader(reader) }.bytes);
 
-        let mut bytes = buf.as_slice();
+        let mut bytes = bytes.as_slice();
         let magic = bytes.read_array::<4>()?;
         if !matches!(
             &magic,
             b"ATEX" | b"ATTX" | b"ATEC" | b"ATEP" | b"ATET" | b"ATEU"
         ) {
-            return Err(ErrorKind::InvalidData.into());
+            return Err(std::io::ErrorKind::InvalidData.into());
         }
 
-        let format_raw = bytes.read_array::<4>()?;
-        let (format, format_flags) = match &format_raw {
+        let format = bytes.read_array::<4>()?;
+        let (format, format_flags) = match &format {
             b"DXT1" => (
                 TextureFormat::Bc1RgbaUnorm,
                 FF_COLOR | FF_ALPHA | FF_DEDUCED_ALPHA,
@@ -113,23 +135,25 @@ impl AssetLoader for ImageLoader {
             b"DXTA" => (TextureFormat::Bc4RUnorm, FF_ALPHA | FF_PLAIN),
             b"DXTN" | b"3DCX" | b"BC5X" => (TextureFormat::Bc5RgUnorm, FF_BICOLOR),
             b"BC7X" => (TextureFormat::Bc7RgbaUnorm, FF_COLOR | FF_ALPHA | FF_PLAIN),
-            _ => return Err(ErrorKind::InvalidData.into()),
+            _ => return Err(std::io::ErrorKind::InvalidData.into()),
         };
+
+        let (block_width, block_height) = format.block_dimensions();
+        let block_size = format
+            .block_copy_size(None)
+            .ok_or(std::io::ErrorKind::InvalidData)? as usize;
 
         let width = bytes.read_le::<u16>()? as u32;
         let height = bytes.read_le::<u16>()? as u32;
-
-        let (block_width, block_height) = format.block_dimensions();
-        let block_size = format.block_copy_size(None).ok_or(ErrorKind::InvalidData)? as usize;
 
         let mut data = Vec::new();
         let mut mip_level_count = 0;
 
         while bytes.len() >= 8 {
             let size = bytes.read_le::<u32>()? as usize;
-            let size = size.checked_sub(8).ok_or(ErrorKind::InvalidData)?;
+            let size = size.checked_sub(8).ok_or(std::io::ErrorKind::InvalidData)?;
             if size > bytes.len() {
-                return Err(ErrorKind::UnexpectedEof.into());
+                return Err(std::io::ErrorKind::UnexpectedEof.into());
             }
 
             let compression_flags = bytes.read_le::<u32>()?;
@@ -175,14 +199,11 @@ impl AssetLoader for ImageLoader {
     }
 }
 
-#[derive(Asset, TypePath)]
-pub struct Packfile(pub ascalon_asset::packfile::Packfile);
-
 #[derive(Default, TypePath)]
-struct PackfileLoader;
+struct ModelLoader;
 
-impl AssetLoader for PackfileLoader {
-    type Asset = Packfile;
+impl AssetLoader for ModelLoader {
+    type Asset = Mesh;
     type Settings = ();
     type Error = std::io::Error;
 
@@ -192,8 +213,12 @@ impl AssetLoader for PackfileLoader {
         _settings: &Self::Settings,
         _load_context: &mut LoadContext<'_>,
     ) -> Result<Self::Asset, Self::Error> {
-        let mut buf = Vec::new();
-        reader.read_to_end(&mut buf).await?;
-        Ok(Packfile(ascalon_asset::packfile::Packfile::new(buf)?))
+        let _bytes = std::mem::take(&mut unsafe { assume_vec_reader(reader) }.bytes);
+
+        return Err(std::io::ErrorKind::InvalidData.into());
     }
+}
+
+unsafe fn assume_vec_reader(reader: &mut dyn Reader) -> &mut VecReader {
+    unsafe { &mut *(reader as *mut dyn Reader as *mut VecReader) }
 }

@@ -5,15 +5,19 @@ name = "ascalon-client"
 version = "0.1.0"
 edition = "2024"
 
+[features]
+dev = ["bevy/free_camera"]
+
 [dependencies]
 uuid = "1"
 zerocopy = "0.8"
 
 bevy = { git = "https://github.com/bevyengine/bevy.git", rev = "1a6377e33b26b6d744f96e35dbe9392e86602ac3" }
 
-ascalon-asset = { git = "https://github.com/valaphee/ascalon.git", rev = "d98de219c8881f2182e93e73f3af47aa0370a958" }
-ascalon-network = { git = "https://github.com/valaphee/ascalon.git", rev = "d98de219c8881f2182e93e73f3af47aa0370a958" }
-ascalon-protocol = { git = "https://github.com/valaphee/ascalon.git", rev = "d98de219c8881f2182e93e73f3af47aa0370a958" }
+#ascalon-asset = { git = "https://github.com/valaphee/ascalon.git", rev = "8204e1ada5bdfe8728e3695e89ee5dc9b8a96a51" }
+ascalon-asset = { path = "../ascalon/asset" }
+ascalon-network = { git = "https://github.com/valaphee/ascalon.git", rev = "8204e1ada5bdfe8728e3695e89ee5dc9b8a96a51" }
+ascalon-protocol = { git = "https://github.com/valaphee/ascalon.git", rev = "8204e1ada5bdfe8728e3695e89ee5dc9b8a96a51" }
 
 [profile.dev]
 opt-level = 1

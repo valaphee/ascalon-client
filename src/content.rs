@@ -16,7 +16,7 @@ impl Plugin for ContentPlugin {
         app.init_resource::<ContentHandles>().add_systems(
             Update,
             load_content
-                .run_if(content_sources_loaded)
+                .run_if(content_handles_loaded)
                 .run_if(not(resource_exists::<Content>)),
         );
     }
@@ -42,7 +42,7 @@ impl FromWorld for ContentHandles {
     }
 }
 
-pub fn content_sources_loaded(
+pub fn content_handles_loaded(
     asset_server: Res<AssetServer>,
     sources: Res<ContentHandles>,
 ) -> bool {
