@@ -298,6 +298,7 @@ checksum = "175571dd1d178ced59193a6fc02dde1b972eb0bc56c892cde9beeceac5bf0f6b"
 [[package]]
 name = "ascalon-asset"
 version = "0.1.0"
+source = "git+https://github.com/valaphee/ascalon.git?rev=42799f25462da40f82e0791885dd61d950444f9f#42799f25462da40f82e0791885dd61d950444f9f"
 dependencies = [
  "ascalon-packfile-schema",
  "proc-macro2",
@@ -315,6 +316,7 @@ dependencies = [
  "ascalon-network",
  "ascalon-protocol",
  "bevy",
+ "bitflags 2.13.2",
  "uuid",
  "zerocopy",
 ]
@@ -322,7 +324,7 @@ dependencies = [
 [[package]]
 name = "ascalon-network"
 version = "0.1.0"
-source = "git+https://github.com/valaphee/ascalon.git?rev=bcc56ae402ad5f943dbc42491fd1225ad699b5a0#bcc56ae402ad5f943dbc42491fd1225ad699b5a0"
+source = "git+https://github.com/valaphee/ascalon.git?rev=42799f25462da40f82e0791885dd61d950444f9f#42799f25462da40f82e0791885dd61d950444f9f"
 dependencies = [
  "bytes",
  "lz4_flex",
@@ -333,6 +335,7 @@ dependencies = [
 [[package]]
 name = "ascalon-packfile-schema"
 version = "0.1.0"
+source = "git+https://github.com/valaphee/ascalon.git?rev=42799f25462da40f82e0791885dd61d950444f9f#42799f25462da40f82e0791885dd61d950444f9f"
 dependencies = [
  "quick-xml 0.42.0",
 ]
@@ -340,7 +343,7 @@ dependencies = [
 [[package]]
 name = "ascalon-protocol"
 version = "0.1.0"
-source = "git+https://github.com/valaphee/ascalon.git?rev=bcc56ae402ad5f943dbc42491fd1225ad699b5a0#bcc56ae402ad5f943dbc42491fd1225ad699b5a0"
+source = "git+https://github.com/valaphee/ascalon.git?rev=42799f25462da40f82e0791885dd61d950444f9f#42799f25462da40f82e0791885dd61d950444f9f"
 dependencies = [
  "ascalon-protocol-schema",
  "bytes",
@@ -350,7 +353,7 @@ dependencies = [
 [[package]]
 name = "ascalon-protocol-schema"
 version = "0.1.0"
-source = "git+https://github.com/valaphee/ascalon.git?rev=bcc56ae402ad5f943dbc42491fd1225ad699b5a0#bcc56ae402ad5f943dbc42491fd1225ad699b5a0"
+source = "git+https://github.com/valaphee/ascalon.git?rev=42799f25462da40f82e0791885dd61d950444f9f#42799f25462da40f82e0791885dd61d950444f9f"
 dependencies = [
  "quick-xml 0.42.0",
 ]

@@ -9,15 +9,15 @@ edition = "2024"
 dev = ["bevy/free_camera"]
 
 [dependencies]
+bitflags = "2"
 uuid = "1"
 zerocopy = "0.8"
 
 bevy = { git = "https://github.com/bevyengine/bevy.git", rev = "1a6377e33b26b6d744f96e35dbe9392e86602ac3", features = ["2d", "3d", "ui"] }
 
-ascalon-asset = { path = "../ascalon/asset" }
-#ascalon-asset = { git = "https://github.com/valaphee/ascalon.git", rev = "bcc56ae402ad5f943dbc42491fd1225ad699b5a0" }
-ascalon-network = { git = "https://github.com/valaphee/ascalon.git", rev = "bcc56ae402ad5f943dbc42491fd1225ad699b5a0" }
-ascalon-protocol = { git = "https://github.com/valaphee/ascalon.git", rev = "bcc56ae402ad5f943dbc42491fd1225ad699b5a0" }
+ascalon-asset = { git = "https://github.com/valaphee/ascalon.git", rev = "42799f25462da40f82e0791885dd61d950444f9f" }
+ascalon-network = { git = "https://github.com/valaphee/ascalon.git", rev = "42799f25462da40f82e0791885dd61d950444f9f" }
+ascalon-protocol = { git = "https://github.com/valaphee/ascalon.git", rev = "42799f25462da40f82e0791885dd61d950444f9f" }
 
 [profile.dev]
 opt-level = 1
@@ -26,5 +26,7 @@ opt-level = 1
 opt-level = 3
 
 [profile.release]
-panic = "immediate-abort"
+#lto = true
 codegen-units = 1
+panic = "immediate-abort"
+strip = "symbols"

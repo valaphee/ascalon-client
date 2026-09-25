@@ -1,13 +1,18 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, fmt};
 
-use ascalon_asset::packfile::{Ptr, WcharPtr, cntc::PackContent};
+use ascalon_asset::packfile::{WcharPtr, cntc::PackContent};
 use bevy::{asset::VisitAssetDependencies, prelude::*};
 use zerocopy::{
     FromBytes,
-    little_endian::{U32, U64},
+    little_endian::{U16, U32, U64},
 };
 
 use crate::asset::Packfile;
+
+mod item;
+mod map;
+
+pub use {item::*, map::*};
 
 pub struct ContentPlugin;
 
@@ -143,7 +148,7 @@ pub fn init_content(
                     let data_id = u32::from_le_bytes(
                         data[data_id_offset as usize..][..4].try_into().unwrap(),
                     );
-                    index.insert(type_id << 22 | data_id & 0x3fffff, data.as_ptr());
+                    index.insert(type_id << 22 | data_id & 0x3FFFFF, data.as_ptr());
                 }
             }
         }
@@ -160,146 +165,44 @@ impl ContentType for Item {
     const TYPE_ID: u32 = 0x23;
 }
 
+impl ContentType for Map {
+    const TYPE_ID: u32 = 0x2D;
+}
+
+#[repr(C)]
+pub struct Guid(U32, U16, U16, [u8; 8]);
+
+impl fmt::Display for Guid {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "{:08x}-{:04x}-{:04x}-{:02x}{:02x}-{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}",
+            self.0,
+            self.1,
+            self.2,
+            self.3[0],
+            self.3[1],
+            self.3[2],
+            self.3[3],
+            self.3[4],
+            self.3[5],
+            self.3[6],
+            self.3[7],
+        )
+    }
+}
+
+impl fmt::Debug for Guid {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        fmt::Display::fmt(self, f)
+    }
+}
+
 #[derive(Debug)]
 #[repr(C)]
 pub struct Name {
-    pub _0: WcharPtr,
-    pub _1: U64,
-    pub _2: WcharPtr,
-    pub _3: U64,
+    pub _00: WcharPtr,
+    pub _08: U64,
+    pub _10: WcharPtr,
+    pub _18: U64,
 }
-
-#[derive(Debug)]
-#[repr(C)]
-pub struct Item {
-    pub _0: [u8; 16],
-    pub _1: U64,
-    pub _2: Ptr<Name>,
-    pub _3: Ptr<Name>,
-    pub dataId: U32,
-    pub r#type: ItemType,
-    pub flags: U64,
-    pub icon: WcharPtr,
-    pub _8: U32,
-    pub _9: U32,
-    pub _10: U32,
-    pub _11: U32,
-    pub _12: U32,
-    pub _13: U32,
-    pub rarity: U32,
-    pub _15: U32,
-    pub _16: U32,
-    pub _17: U32,
-    pub _18: U32,
-    pub _19: U32,
-    pub _20: U32,
-    pub _21: U32,
-    pub name: U32,
-    pub description: U32,
-}
-
-#[derive(Debug)]
-#[repr(C, u32)]
-pub enum ItemType {
-    Armor(Ptr<ItemArmor>),
-    Augment(Ptr<ItemAugment>),
-    Back(Ptr<ItemBack>),
-    Bag(Ptr<ItemBag>),
-    Consumable(Ptr<ItemConsumable>),
-    Container(Ptr<ItemContainer>),
-    CraftingMaterial(Ptr<ItemCraftingMaterial>),
-    _7(U64),
-    _8(U64),
-    Gathering(Ptr<ItemGathering>),
-    Gizmo(Ptr<ItemGizmo>),
-    JadeTechModule(Ptr<ItemJadeTechModule>),
-    _12(U64),
-    _13(U64),
-    _14(U64),
-    MiniPet(Ptr<ItemMiniPet>),
-    _16(U64),
-    PowerCore(Ptr<ItemPowerCore>),
-    Relic(Ptr<ItemRelic>),
-    Tool(Ptr<ItemTool>),
-    TraitGuide(Ptr<ItemTraitGuide>),
-    Trinket(Ptr<ItemTrinket>),
-    Trophy(Ptr<ItemTrophy>),
-    UpgradeComponent(Ptr<ItemUpgradeComponent>),
-    Weapon(Ptr<ItemWeapon>),
-}
-
-#[repr(C)]
-#[derive(Debug)]
-pub struct ItemArmor;
-
-#[repr(C)]
-#[derive(Debug)]
-pub struct ItemAugment;
-
-#[repr(C)]
-#[derive(Debug)]
-pub struct ItemBack;
-
-#[repr(C)]
-#[derive(Debug)]
-pub struct ItemBag;
-
-#[repr(C)]
-#[derive(Debug)]
-pub struct ItemConsumable;
-
-#[repr(C)]
-#[derive(Debug)]
-pub struct ItemContainer;
-
-#[repr(C)]
-#[derive(Debug)]
-pub struct ItemCraftingMaterial;
-
-#[repr(C)]
-#[derive(Debug)]
-pub struct ItemGathering;
-
-#[repr(C)]
-#[derive(Debug)]
-pub struct ItemGizmo;
-
-#[repr(C)]
-#[derive(Debug)]
-pub struct ItemJadeTechModule;
-
-#[repr(C)]
-#[derive(Debug)]
-pub struct ItemMiniPet;
-
-#[repr(C)]
-#[derive(Debug)]
-pub struct ItemPowerCore;
-
-#[repr(C)]
-#[derive(Debug)]
-pub struct ItemRelic;
-
-#[repr(C)]
-#[derive(Debug)]
-pub struct ItemTool;
-
-#[repr(C)]
-#[derive(Debug)]
-pub struct ItemTraitGuide;
-
-#[repr(C)]
-#[derive(Debug)]
-pub struct ItemTrinket;
-
-#[repr(C)]
-#[derive(Debug)]
-pub struct ItemTrophy;
-
-#[repr(C)]
-#[derive(Debug)]
-pub struct ItemUpgradeComponent;
-
-#[repr(C)]
-#[derive(Debug)]
-pub struct ItemWeapon;

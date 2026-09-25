@@ -4,7 +4,7 @@ use bevy::prelude::*;
 
 use crate::{
     asset::{AssetLoaderPlugin, AssetSourcePlugin},
-    content::{Content, ContentPlugin, Item},
+    content::{Content, ContentPlugin, Item, Map},
     strings::{Strings, StringsPlugin},
 };
 
@@ -23,13 +23,7 @@ fn main() {
         StringsPlugin,
     ))
     .add_systems(Startup, setup)
-    .add_systems(
-        Update,
-        (
-            debug_item.run_if(resource_added::<Content>),
-            debug_item_2.run_if(resource_exists::<Content>),
-        ),
-    );
+    .add_systems(Update, debug.run_if(resource_added::<Content>));
 
     #[cfg(feature = "dev")]
     app.add_plugins(bevy::camera_controller::free_camera::FreeCameraPlugin);
@@ -45,12 +39,15 @@ fn setup(mut commands: Commands) {
     ));
 }
 
-fn debug_item(mut commands: Commands, asset_server: Res<AssetServer>, content: Res<Content>) {
-    let item = content.get::<Item>(4925).unwrap();
+fn debug(mut commands: Commands, asset_server: Res<AssetServer>, content: Res<Content>) {
+    let item = content.get::<Item>(14065).unwrap();
     info!("{item:?}");
 
+    let map = content.get::<Map>(15).unwrap();
+    info!("{map:?}");
+
     commands.spawn((
-        ImageNode::new(asset_server.load(unsafe { item.icon.to_string_lossy() })),
+        ImageNode::new(asset_server.load(unsafe { map._58.to_string_lossy() })),
         Node {
             position_type: PositionType::Absolute,
             left: px(16),
@@ -60,13 +57,4 @@ fn debug_item(mut commands: Commands, asset_server: Res<AssetServer>, content: R
             ..default()
         },
     ));
-}
-
-fn debug_item_2(strings: Strings, content: Res<Content>) {
-    let item = content.get::<Item>(4925).unwrap();
-    info!(
-        "{} {}",
-        strings.get(item.name.get()).unwrap_or_default(),
-        strings.get(item.description.get()).unwrap_or_default(),
-    );
 }
