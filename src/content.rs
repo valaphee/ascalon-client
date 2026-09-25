@@ -15,7 +15,7 @@ impl Plugin for ContentPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<ContentHandles>().add_systems(
             Update,
-            load_content
+            init_content
                 .run_if(content_handles_loaded)
                 .run_if(not(resource_exists::<Content>)),
         );
@@ -29,37 +29,43 @@ impl FromWorld for ContentHandles {
     fn from_world(world: &mut World) -> Self {
         let asset_server = world.resource::<AssetServer>();
 
-        let handles = [
-            "꜍ē", "꜎ē", "꜏ē", "꜐ē", "꜑ē", "꜒ē", "꜓ē", "꜔ē", "꜕ē", "꜖ē", "ꜗē", "ꜘē", "ꜙē", "ꜚē",
-            "ꜛē", "ꜜē", "ꜝē", "ꜞē", "ꜟē", "꜠ē", "꜡ē", "Ꜣē", "ꜣē", "Ꜥē", "ꜥē", "Ꜧē", "ꜧē", "Ꜩē",
-            "ꜩē", "Ꜫē", "ꜫē", "Ꜭē",
-        ]
-        .into_iter()
-        .map(|path| asset_server.load(path))
-        .collect();
-
-        Self(handles)
+        Self(
+            [
+                "꜍ē", "꜎ē", "꜏ē", "꜐ē", "꜑ē", "꜒ē", "꜓ē", "꜔ē", "꜕ē", "꜖ē", "ꜗē", "ꜘē", "ꜙē", "ꜚē",
+                "ꜛē", "ꜜē", "ꜝē", "ꜞē", "ꜟē", "꜠ē", "꜡ē", "Ꜣē", "ꜣē", "Ꜥē", "ꜥē", "Ꜧē", "ꜧē", "Ꜩē",
+                "ꜩē", "Ꜫē", "ꜫē", "Ꜭē",
+            ]
+            .into_iter()
+            .map(|path| asset_server.load(path))
+            .collect(),
+        )
     }
 }
 
 pub fn content_handles_loaded(
     asset_server: Res<AssetServer>,
-    sources: Res<ContentHandles>,
+    handles: Res<ContentHandles>,
 ) -> bool {
-    asset_server.are_dependencies_loaded(&*sources)
+    asset_server.are_dependencies_loaded(&*handles)
 }
 
 #[derive(Resource)]
 pub struct Content(HashMap<u32, *const u8>);
 
+impl Content {
+    pub fn get<T: ContentType>(&self, data_id: u32) -> Option<&T> {
+        unsafe { (*self.0.get(&(T::TYPE_ID << 22 | data_id))? as *const T).as_ref() }
+    }
+}
+
 unsafe impl Sync for Content {}
 
 unsafe impl Send for Content {}
 
-pub fn load_content(
+pub fn init_content(
+    mut commands: Commands,
     assets: Res<Assets<Packfile>>,
     handles: Res<ContentHandles>,
-    mut commands: Commands,
 ) {
     let content: Vec<_> = handles
         .0
@@ -146,47 +152,55 @@ pub fn load_content(
     commands.insert_resource(Content(index));
 }
 
-#[derive(Debug)]
-#[repr(C)]
-struct Name {
-    _0: WcharPtr,
-    _1: U64,
-    _2: WcharPtr,
-    _3: U64,
+pub trait ContentType {
+    const TYPE_ID: u32;
+}
+
+impl ContentType for Item {
+    const TYPE_ID: u32 = 0x23;
 }
 
 #[derive(Debug)]
 #[repr(C)]
-struct Item {
-    _0: [u8; 16],
-    _1: U64,
-    _2: Ptr<Name>,
-    _3: Ptr<Name>,
-    dataId: U32,
-    r#type: ItemType,
-    flags: U64,
-    icon: WcharPtr,
-    _8: U32,
-    _9: U32,
-    _10: U32,
-    _11: U32,
-    _12: U32,
-    _13: U32,
-    rarity: U32,
-    _15: U32,
-    _16: U32,
-    _17: U32,
-    _18: U32,
-    _19: U32,
-    _20: U32,
-    _21: U32,
-    name: U32,
-    description: U32,
+pub struct Name {
+    pub _0: WcharPtr,
+    pub _1: U64,
+    pub _2: WcharPtr,
+    pub _3: U64,
+}
+
+#[derive(Debug)]
+#[repr(C)]
+pub struct Item {
+    pub _0: [u8; 16],
+    pub _1: U64,
+    pub _2: Ptr<Name>,
+    pub _3: Ptr<Name>,
+    pub dataId: U32,
+    pub r#type: ItemType,
+    pub flags: U64,
+    pub icon: WcharPtr,
+    pub _8: U32,
+    pub _9: U32,
+    pub _10: U32,
+    pub _11: U32,
+    pub _12: U32,
+    pub _13: U32,
+    pub rarity: U32,
+    pub _15: U32,
+    pub _16: U32,
+    pub _17: U32,
+    pub _18: U32,
+    pub _19: U32,
+    pub _20: U32,
+    pub _21: U32,
+    pub name: U32,
+    pub description: U32,
 }
 
 #[derive(Debug)]
 #[repr(C, u32)]
-enum ItemType {
+pub enum ItemType {
     Armor(Ptr<ItemArmor>),
     Augment(Ptr<ItemAugment>),
     Back(Ptr<ItemBack>),
@@ -216,76 +230,76 @@ enum ItemType {
 
 #[repr(C)]
 #[derive(Debug)]
-struct ItemArmor;
+pub struct ItemArmor;
 
 #[repr(C)]
 #[derive(Debug)]
-struct ItemAugment;
+pub struct ItemAugment;
 
 #[repr(C)]
 #[derive(Debug)]
-struct ItemBack;
+pub struct ItemBack;
 
 #[repr(C)]
 #[derive(Debug)]
-struct ItemBag;
+pub struct ItemBag;
 
 #[repr(C)]
 #[derive(Debug)]
-struct ItemConsumable;
+pub struct ItemConsumable;
 
 #[repr(C)]
 #[derive(Debug)]
-struct ItemContainer;
+pub struct ItemContainer;
 
 #[repr(C)]
 #[derive(Debug)]
-struct ItemCraftingMaterial;
+pub struct ItemCraftingMaterial;
 
 #[repr(C)]
 #[derive(Debug)]
-struct ItemGathering;
+pub struct ItemGathering;
 
 #[repr(C)]
 #[derive(Debug)]
-struct ItemGizmo;
+pub struct ItemGizmo;
 
 #[repr(C)]
 #[derive(Debug)]
-struct ItemJadeTechModule;
+pub struct ItemJadeTechModule;
 
 #[repr(C)]
 #[derive(Debug)]
-struct ItemMiniPet;
+pub struct ItemMiniPet;
 
 #[repr(C)]
 #[derive(Debug)]
-struct ItemPowerCore;
+pub struct ItemPowerCore;
 
 #[repr(C)]
 #[derive(Debug)]
-struct ItemRelic;
+pub struct ItemRelic;
 
 #[repr(C)]
 #[derive(Debug)]
-struct ItemTool;
+pub struct ItemTool;
 
 #[repr(C)]
 #[derive(Debug)]
-struct ItemTraitGuide;
+pub struct ItemTraitGuide;
 
 #[repr(C)]
 #[derive(Debug)]
-struct ItemTrinket;
+pub struct ItemTrinket;
 
 #[repr(C)]
 #[derive(Debug)]
-struct ItemTrophy;
+pub struct ItemTrophy;
 
 #[repr(C)]
 #[derive(Debug)]
-struct ItemUpgradeComponent;
+pub struct ItemUpgradeComponent;
 
 #[repr(C)]
 #[derive(Debug)]
-struct ItemWeapon;
+pub struct ItemWeapon;
