@@ -1,4 +1,7 @@
+use std::ffi::OsString;
 use std::io::Read as _;
+use std::os::windows::ffi::OsStringExt;
+use std::path::PathBuf;
 use std::sync::OnceLock;
 
 use ascalon_asset::packfile::txtm::TextPackManifest;
@@ -67,7 +70,7 @@ impl AssetLoader for StringsChunkLoader {
         if &magic != b"strs" {
             return Err(std::io::Error::new(
                 std::io::ErrorKind::InvalidData,
-                "strings: invalid magic",
+                "invalid magic",
             ));
         }
 
@@ -121,7 +124,9 @@ impl Strings<'_> {
 
         let handle = self.state.strings[file_index].get_or_init(|| {
             self.asset_server
-                .load(unsafe { filenames[file_index].to_string_lossy() })
+                .load(PathBuf::from(OsString::from_wide(unsafe {
+                    filenames[file_index].as_slice()
+                })))
         });
 
         self.assets

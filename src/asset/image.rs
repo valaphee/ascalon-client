@@ -38,7 +38,7 @@ impl AssetLoader for ImageLoader {
         ) {
             return Err(std::io::Error::new(
                 std::io::ErrorKind::InvalidData,
-                "image: invalid magic",
+                "invalid magic",
             ));
         }
 

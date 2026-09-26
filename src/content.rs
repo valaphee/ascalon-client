@@ -2,10 +2,7 @@ use std::{collections::HashMap, fmt};
 
 use ascalon_asset::packfile::{WcharPtr, cntc::PackContent};
 use bevy::{asset::VisitAssetDependencies, prelude::*};
-use zerocopy::{
-    FromBytes,
-    little_endian::{U16, U32, U64},
-};
+use zerocopy::FromBytes;
 
 use crate::asset::Packfile;
 
@@ -170,7 +167,7 @@ impl ContentType for Map {
 }
 
 #[repr(C)]
-pub struct Guid(U32, U16, U16, [u8; 8]);
+pub struct Guid(u32, u16, u16, [u8; 8]);
 
 impl fmt::Display for Guid {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -202,7 +199,9 @@ impl fmt::Debug for Guid {
 #[repr(C)]
 pub struct Name {
     pub _00: WcharPtr,
-    pub _08: U64,
+    pub _08: u32,
+    pub _0c: u32,
     pub _10: WcharPtr,
-    pub _18: U64,
+    pub _18: u32,
+    pub _1c: u32,
 }

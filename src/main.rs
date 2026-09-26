@@ -1,5 +1,7 @@
 #![feature(f16, read_array, read_le)]
 
+use std::{ffi::OsString, os::windows::ffi::OsStringExt, path::PathBuf};
+
 use bevy::prelude::*;
 
 use crate::{
@@ -23,7 +25,13 @@ fn main() {
         StringsPlugin,
     ))
     .add_systems(Startup, setup)
-    .add_systems(Update, debug.run_if(resource_added::<Content>));
+    .add_systems(
+        Update,
+        (
+            debug.run_if(resource_added::<Content>),
+            //debug_2.run_if(resource_exists::<Content>),
+        ),
+    );
 
     #[cfg(feature = "dev")]
     app.add_plugins(bevy::camera_controller::free_camera::FreeCameraPlugin);
@@ -41,13 +49,15 @@ fn setup(mut commands: Commands) {
 
 fn debug(mut commands: Commands, asset_server: Res<AssetServer>, content: Res<Content>) {
     let item = content.get::<Item>(14065).unwrap();
-    info!("{item:?}");
+    info!("{item:#?}");
 
-    let map = content.get::<Map>(15).unwrap();
-    info!("{map:?}");
+    let map = content.get::<Map>(573).unwrap();
+    info!("{map:#?}");
 
     commands.spawn((
-        ImageNode::new(asset_server.load(unsafe { map._58.to_string_lossy() })),
+        ImageNode::new(asset_server.load(PathBuf::from(OsString::from_wide(unsafe {
+            item.icon.as_slice()
+        })))),
         Node {
             position_type: PositionType::Absolute,
             left: px(16),
@@ -57,4 +67,13 @@ fn debug(mut commands: Commands, asset_server: Res<AssetServer>, content: Res<Co
             ..default()
         },
     ));
+}
+
+fn debug_2(strings: Strings, content: Res<Content>) {
+    let map = content.get::<Map>(38).unwrap();
+    info!(
+        "{} {}",
+        strings.get(map._168).unwrap_or_default(),
+        strings.get(map._16c).unwrap_or_default(),
+    );
 }

@@ -1,5 +1,4 @@
 use ascalon_asset::packfile::{Ptr, WcharPtr};
-use zerocopy::little_endian::U32;
 
 use super::{Guid, Name};
 
@@ -7,31 +6,37 @@ use super::{Guid, Name};
 #[repr(C)]
 pub struct Item {
     pub contentGuid: Guid,
-    pub contentType: U32,
-    pub contentUid: U32,
+    pub contentType: u32,
+    pub contentUid: u32,
     pub contentName: Ptr<Name>,
     pub contentFullName: Ptr<Name>,
-    pub dataId: U32,
+    pub dataId: u32,
     pub r#type: ItemType,
-    pub flags: U32,
-    pub _3c: U32,
+    pub flags: u32,
+    pub _3c: u32,
     pub icon: WcharPtr,
-    pub _48: U32,
-    pub _level: U32,
-    pub _50: U32,
-    pub _54: U32,
-    pub _58: U32,
-    pub _5c: U32,
+    pub _48: u32,
+    pub _level: u32,
+    pub _50: Ptr<()>,
+    pub _58: Ptr<()>,
     pub rarity: ItemRarity,
-    pub _64: U32,
-    pub _68: U32,
-    pub _6c: U32,
-    pub _70: U32,
-    pub _74: U32,
-    pub level: U32,
-    pub _7c: U32,
-    pub name: U32,
-    pub description: U32,
+    pub _64: u32,
+    pub _68: Ptr<()>,
+    pub _70: u32,
+    pub level: u32,
+    pub _78: u32,
+    pub _7c: u32,
+    pub name: u32,
+    pub description: u32,
+    pub _88: u32,
+    pub _8c: u32,
+    pub _90: Ptr<()>,
+    pub _98: u32,
+    pub _9c: u32,
+    pub _a0: u32,
+    pub _a4: u32,
+    pub _a8: u32,
+    pub _ac: u32,
 }
 
 #[derive(Debug)]
@@ -76,28 +81,28 @@ pub enum ItemRarity {
 pub struct ItemArmor {
     pub _00: Ptr<()>,
     pub r#type: ItemArmorType,
-    pub defense: U32,
-    pub scaleType: U32,
-    pub _14: U32,
-    pub _18: U32,
-    pub _1c: U32,
-    pub _20: U32,
-    pub _24: U32,
-    pub _28: U32,
-    pub _2c: U32,
-    pub _30: U32,
-    pub _34: U32,
+    pub defense: u32,
+    pub scaleType: u32,
+    pub _14: u32,
+    pub _18: u32,
+    pub _1c: u32,
+    pub _20: u32,
+    pub _24: u32,
+    pub _28: u32,
+    pub _2c: u32,
+    pub _30: u32,
+    pub _34: u32,
     pub _38: Ptr<()>,
-    pub _40: U32,
-    pub _44: U32,
-    pub _48: U32,
-    pub _4c: U32,
-    pub _50: U32,
-    pub _54: U32,
-    pub _58: U32,
-    pub _5c: U32,
-    pub _60: U32,
-    pub _64: U32,
+    pub _40: u32,
+    pub _44: u32,
+    pub _48: u32,
+    pub _4c: u32,
+    pub _50: u32,
+    pub _54: u32,
+    pub _58: u32,
+    pub _5c: u32,
+    pub _60: u32,
+    pub _64: u32,
     pub weightClass: ItemArmorWeightClass,
 }
 
@@ -136,17 +141,17 @@ pub struct ItemBack;
 #[derive(Debug)]
 #[repr(C)]
 pub struct ItemBag {
-    pub _00: U32,
-    pub _04: U32,
-    pub _08: U32,
-    pub _0c: U32,
-    pub _10: U32,
-    pub _14: U32,
-    pub _18: U32,
-    pub _1c: U32,
-    pub _20: U32,
-    pub _24: U32,
-    pub size: U32,
+    pub _00: u32,
+    pub _04: u32,
+    pub _08: u32,
+    pub _0c: u32,
+    pub _10: u32,
+    pub _14: u32,
+    pub _18: u32,
+    pub _1c: u32,
+    pub _20: u32,
+    pub _24: u32,
+    pub size: u32,
 }
 
 #[derive(Debug)]
@@ -181,26 +186,26 @@ pub enum ItemConsumableType {
 #[repr(C)]
 pub struct ItemContainer {
     pub flags: ItemContainerFlags,
-    pub _04: U32,
-    pub _08: U32,
-    pub _0c: U32,
-    pub _10: U32,
-    pub _14: U32,
-    pub _18: U32,
-    pub _1c: U32,
-    pub _20: U32,
-    pub _24: U32,
-    pub _28: U32,
-    pub _2c: U32,
-    pub _30: U32,
-    pub _34: U32,
-    pub _38: U32,
-    pub _3c: U32,
-    pub _40: U32,
-    pub _44: U32,
-    pub _48: U32,
-    pub _4c: U32,
-    pub _50: U32,
+    pub _04: u32,
+    pub _08: u32,
+    pub _0c: u32,
+    pub _10: u32,
+    pub _14: u32,
+    pub _18: u32,
+    pub _1c: u32,
+    pub _20: u32,
+    pub _24: u32,
+    pub _28: u32,
+    pub _2c: u32,
+    pub _30: u32,
+    pub _34: u32,
+    pub _38: u32,
+    pub _3c: u32,
+    pub _40: u32,
+    pub _44: u32,
+    pub _48: u32,
+    pub _4c: u32,
+    pub _50: u32,
     pub r#type: ItemContainerType,
 }
 
@@ -229,17 +234,17 @@ pub struct ItemCraftingMaterial;
 #[repr(C)]
 pub struct ItemGathering {
     pub _00: Ptr<()>,
-    pub _08: U32,
-    pub _0c: U32,
+    pub _08: u32,
+    pub _0c: u32,
     pub _10: Ptr<()>,
-    pub r#type: U32,
+    pub r#type: u32,
 }
 
 #[derive(Debug)]
 #[repr(C)]
 pub struct ItemGizmo {
-    pub _00: U32,
-    pub r#type: U32,
+    pub _00: u32,
+    pub r#type: u32,
 }
 
 #[derive(Debug)]
@@ -261,8 +266,8 @@ pub struct ItemRelic;
 #[derive(Debug)]
 #[repr(C)]
 pub struct ItemTool {
-    pub _00: U32,
-    pub r#type: U32,
+    pub _00: u32,
+    pub r#type: u32,
 }
 
 #[derive(Debug)]
@@ -272,14 +277,14 @@ pub struct ItemTraitGuide;
 #[derive(Debug)]
 #[repr(C)]
 pub struct ItemTrinket {
-    pub _00: U32,
-    pub _04: U32,
-    pub _08: U32,
-    pub _0c: U32,
-    pub _10: U32,
-    pub _14: U32,
-    pub _18: U32,
-    pub _1c: U32,
+    pub _00: u32,
+    pub _04: u32,
+    pub _08: u32,
+    pub _0c: u32,
+    pub _10: u32,
+    pub _14: u32,
+    pub _18: u32,
+    pub _1c: u32,
     pub r#type: ItemTrinketType,
 }
 
@@ -299,14 +304,14 @@ pub struct ItemTrophy;
 #[derive(Debug)]
 #[repr(C)]
 pub struct ItemUpgradeComponent {
-    pub _00: U32,
-    pub _04: U32,
-    pub _08: U32,
-    pub _0c: U32,
+    pub _00: u32,
+    pub _04: u32,
+    pub _08: u32,
+    pub _0c: u32,
     pub _10: Ptr<()>,
-    pub _18: U32,
-    pub _1c: U32,
-    pub _20: U32,
+    pub _18: u32,
+    pub _1c: u32,
+    pub _20: u32,
     pub r#type: ItemUpgradeComponentType,
 }
 
@@ -324,13 +329,13 @@ pub enum ItemUpgradeComponentType {
 #[repr(C)]
 pub struct ItemWeapon {
     pub _00: Ptr<()>,
-    pub _08: U32,
+    pub _08: u32,
     pub r#type: ItemWeaponType,
-    pub _10: U32,
-    pub _14: U32,
-    pub _18: U32,
-    pub defense: U32,
-    pub scaleType: U32,
+    pub _10: u32,
+    pub _14: u32,
+    pub _18: u32,
+    pub defense: u32,
+    pub scaleType: u32,
 }
 
 #[derive(Debug)]
