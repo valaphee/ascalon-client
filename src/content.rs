@@ -2,14 +2,15 @@ use std::{collections::HashMap, fmt};
 
 use ascalon_asset::packfile::{WcharPtr, cntc::PackContent};
 use bevy::{asset::VisitAssetDependencies, prelude::*};
-use zerocopy::FromBytes;
+use zerocopy::FromBytes as _;
 
 use crate::asset::Packfile;
 
+mod paint;
 mod item;
 mod map;
 
-pub use {item::*, map::*};
+pub use {paint::*, item::*, map::*};
 
 pub struct ContentPlugin;
 
@@ -166,6 +167,10 @@ pub fn init_content(
 
 pub trait ContentType {
     const TYPE_ID: u32;
+}
+
+impl ContentType for Paint {
+    const TYPE_ID: u32 = 0x09;
 }
 
 impl ContentType for Item {

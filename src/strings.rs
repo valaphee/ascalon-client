@@ -9,7 +9,7 @@ use bevy::asset::io::{Reader, VecReader};
 use bevy::asset::{AssetLoader, LoadContext, VisitAssetDependencies};
 use bevy::ecs::system::SystemParam;
 use bevy::prelude::*;
-use zerocopy::FromBytes;
+use zerocopy::FromBytes as _;
 
 use crate::asset::Packfile;
 
