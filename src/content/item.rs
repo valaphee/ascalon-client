@@ -12,7 +12,7 @@ pub struct Item {
     pub contentFullName: Ptr<Name>,
     pub dataId: u32,
     pub r#type: ItemType,
-    pub flags: u32,
+    pub _38: u32,
     pub _3c: u32,
     pub icon: WcharPtr,
     pub _48: u32,
@@ -52,6 +52,7 @@ pub enum ItemType {
     Gathering(Ptr<ItemGathering>) = 9,
     Gizmo(Ptr<ItemGizmo>) = 10,
     JadeTechModule(Ptr<ItemJadeTechModule>) = 11,
+    Key = 12,
     MiniPet(Ptr<ItemMiniPet>) = 15,
     PowerCore(Ptr<ItemPowerCore>) = 17,
     Relic(Ptr<ItemRelic>) = 18,
@@ -80,9 +81,9 @@ pub enum ItemRarity {
 #[repr(C)]
 pub struct ItemArmor {
     pub _00: Ptr<()>,
-    pub r#type: ItemArmorType,
-    pub defense: u32,
-    pub scaleType: u32,
+    pub r#type: u32,
+    pub _0c: u32,
+    pub _10: u32,
     pub _14: u32,
     pub _18: u32,
     pub _1c: u32,
@@ -109,25 +110,22 @@ pub struct ItemArmor {
 #[derive(Debug)]
 #[repr(u32)]
 pub enum ItemArmorType {
-    _0 = 0,
-    _1 = 1,
-    _2 = 2,
-    _3 = 3,
-    _4 = 4,
-    _5 = 5,
-    _6 = 6,
-    _7 = 7,
-    _8 = 8,
+    Coat = 0,
+    Leggings = 1,
+    Gloves = 2,
+    Helm = 3,
+    HelmAquatic = 4,
+    Boots = 5,
+    Shoulders = 6,
 }
 
 #[derive(Debug)]
 #[repr(u32)]
 pub enum ItemArmorWeightClass {
-    _0 = 0,
-    _1 = 1,
-    _2 = 2,
-    _3 = 3,
-    _4 = 4,
+    Clothing = 0,
+    Light = 1,
+    Medium = 2,
+    Heavy = 3,
 }
 
 #[derive(Debug)]
@@ -163,23 +161,21 @@ pub struct ItemConsumable {
 #[derive(Debug)]
 #[repr(u32)]
 pub enum ItemConsumableType {
-    _0 = 0,
-    _1 = 1,
-    _2 = 2,
-    _3 = 3,
-    _4 = 4,
-    _5 = 5,
-    _6 = 6,
-    _7 = 7,
-    _8 = 8,
-    _9 = 9,
-    _10 = 10,
-    _11 = 11,
-    _12 = 12,
-    _13 = 13,
-    _14 = 14,
-    _15 = 15,
-    _16 = 16,
+    AppearanceChange = 0,
+    Booze = 1,
+    ContractNpc = 2,
+    Food = 3,
+    Generic = 4,
+    Halloween = 5,
+    Immediate = 6,
+    TeleportToFriend = 8,
+    Transmutation = 9,
+    Unlock = 10,
+    RandomUnlock = 11,
+    UpgradeRemoval = 13,
+    Utility = 14,
+    MountRandomUnlock = 15,
+    Currency = 16,
 }
 
 #[derive(Debug)]
@@ -221,8 +217,8 @@ bitflags::bitflags! {
 #[repr(u32)]
 pub enum ItemContainerType {
     Default = 0,
-    _1 = 1,
-    _2 = 2,
+    GiftBox = 1,
+    Immediate = 2,
     OpenUi = 3,
 }
 
@@ -234,17 +230,37 @@ pub struct ItemCraftingMaterial;
 #[repr(C)]
 pub struct ItemGathering {
     pub _00: Ptr<()>,
-    pub _08: u32,
+    pub uses: u32,
     pub _0c: u32,
     pub _10: Ptr<()>,
-    pub r#type: u32,
+    pub r#type: ItemGatheringType,
+}
+
+#[derive(Debug)]
+#[repr(u32)]
+pub enum ItemGatheringType {
+    Foraging = 0,
+    Logging = 1,
+    Mining = 2,
+    Fishing = 3,
+    Bait = 4,
+    Lure = 5,
 }
 
 #[derive(Debug)]
 #[repr(C)]
 pub struct ItemGizmo {
     pub _00: u32,
-    pub r#type: u32,
+    pub r#type: ItemGizmoType,
+}
+
+#[derive(Debug)]
+#[repr(u32)]
+pub enum ItemGizmoType {
+    Default = 0,
+    ContainerKey = 1,
+    RentableContractNpc = 2,
+    UnlimitedConsumable = 4,
 }
 
 #[derive(Debug)]
@@ -266,8 +282,14 @@ pub struct ItemRelic;
 #[derive(Debug)]
 #[repr(C)]
 pub struct ItemTool {
-    pub _00: u32,
-    pub r#type: u32,
+    pub uses: u32,
+    pub r#type: ItemToolType,
+}
+
+#[derive(Debug)]
+#[repr(u32)]
+pub enum ItemToolType {
+    Salvage = 2,
 }
 
 #[derive(Debug)]
@@ -291,10 +313,9 @@ pub struct ItemTrinket {
 #[derive(Debug)]
 #[repr(u32)]
 pub enum ItemTrinketType {
-    _0 = 0,
-    _1 = 1,
-    _2 = 2,
-    _3 = 3,
+    Accessory = 0,
+    Amulet = 1,
+    Ring = 2,
 }
 
 #[derive(Debug)]
@@ -318,11 +339,10 @@ pub struct ItemUpgradeComponent {
 #[derive(Debug)]
 #[repr(u32)]
 pub enum ItemUpgradeComponentType {
-    _0 = 0,
-    _1 = 1,
-    _2 = 2,
-    _3 = 3,
-    _4 = 4,
+    Default = 0,
+    Gem = 1,
+    Rune = 2,
+    Sigil = 3,
 }
 
 #[derive(Debug)]
@@ -334,36 +354,35 @@ pub struct ItemWeapon {
     pub _10: u32,
     pub _14: u32,
     pub _18: u32,
-    pub defense: u32,
-    pub scaleType: u32,
+    pub _1c: u32,
+    pub _20: u32,
 }
 
 #[derive(Debug)]
 #[repr(u32)]
 pub enum ItemWeaponType {
-    _0 = 0,
-    _1 = 1,
-    _2 = 2,
-    _3 = 3,
-    _4 = 4,
-    _5 = 5,
-    _6 = 6,
-    _7 = 7,
-    _8 = 8,
-    _9 = 9,
-    _10 = 10,
-    _11 = 11,
-    _12 = 12,
-    _13 = 13,
-    _14 = 14,
-    _15 = 15,
-    _16 = 16,
-    _17 = 17,
-    _18 = 18,
-    _19 = 19,
-    _20 = 20,
-    _21 = 21,
-    _22 = 22,
-    _23 = 23,
-    _24 = 24,
+    Sword = 0,
+    Hammer = 1,
+    LongBow = 2,
+    ShortBow = 3,
+    Axe = 4,
+    Dagger = 5,
+    Greatsword = 6,
+    Mace = 7,
+    Pistol = 8,
+    Rifle = 10,
+    Scepter = 11,
+    Staff = 12,
+    Focus = 13,
+    Torch = 14,
+    Warhorn = 15,
+    Shield = 16,
+    SmallBundle = 17,
+    LargeBundle = 18,
+    Harpoon = 19,
+    Speargun = 20,
+    Trident = 21,
+    Toy = 22,
+    ToyTwoHanded = 23,
+    _25 = 25,
 }

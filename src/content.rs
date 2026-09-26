@@ -54,15 +54,25 @@ pub fn content_handles_loaded(
 #[derive(Resource)]
 pub struct Content(HashMap<u32, *const u8>);
 
+unsafe impl Sync for Content {}
+
+unsafe impl Send for Content {}
+
 impl Content {
+    pub fn iter<'a, T: ContentType + 'a>(&'a self) -> impl Iterator<Item = &'a T> + 'a {
+        self.0.iter().filter_map(|(&key, &ptr)| {
+            if key >> 22 != T::TYPE_ID {
+                return None;
+            }
+
+            unsafe { (ptr as *const T).as_ref() }
+        })
+    }
+
     pub fn get<T: ContentType>(&self, data_id: u32) -> Option<&T> {
         unsafe { (*self.0.get(&(T::TYPE_ID << 22 | data_id))? as *const T).as_ref() }
     }
 }
-
-unsafe impl Sync for Content {}
-
-unsafe impl Send for Content {}
 
 pub fn init_content(
     mut commands: Commands,

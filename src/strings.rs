@@ -106,10 +106,21 @@ impl AssetLoader for StringsChunkLoader {
 
 #[derive(SystemParam)]
 pub struct Strings<'w> {
-    state: Res<'w, StringsState>,
     asset_server: Res<'w, AssetServer>,
     assets: Res<'w, Assets<StringsChunk>>,
+    state: Res<'w, StringsState>,
 }
+
+#[derive(Resource)]
+struct StringsState {
+    manifest: *const TextPackManifest,
+    language: usize,
+    strings: Box<[OnceLock<Handle<StringsChunk>>]>,
+}
+
+unsafe impl Sync for StringsState {}
+
+unsafe impl Send for StringsState {}
 
 impl Strings<'_> {
     pub fn get(&self, text_id: u32) -> Option<&str> {
@@ -139,17 +150,6 @@ impl Strings<'_> {
             })
     }
 }
-
-#[derive(Resource)]
-struct StringsState {
-    manifest: *const TextPackManifest,
-    language: usize,
-    strings: Box<[OnceLock<Handle<StringsChunk>>]>,
-}
-
-unsafe impl Sync for StringsState {}
-
-unsafe impl Send for StringsState {}
 
 fn init_strings(mut commands: Commands, assets: Res<Assets<Packfile>>, handle: Res<StringsHandle>) {
     let Some(asset) = assets.get(&handle.0) else {
