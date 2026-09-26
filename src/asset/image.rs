@@ -1,8 +1,6 @@
 use std::io::Read as _;
 
-use ascalon_asset::texture::{
-    FMT_ALPHA, FMT_BICOLOR, FMT_COLOR, FMT_DEDUCED_ALPHA, FMT_PLAIN, inflate,
-};
+use ascalon_asset::texture::{Cmp, Fmt, inflate};
 use bevy::{
     asset::{
         AssetLoader, LoadContext, RenderAssetUsages,
@@ -43,24 +41,24 @@ impl AssetLoader for ImageLoader {
         }
 
         let format = bytes.read_array::<4>()?;
-        let (format, format_flags) = match &format {
+        let (format, _format) = match &format {
             b"DXT1" => (
                 TextureFormat::Bc1RgbaUnorm,
-                FMT_COLOR | FMT_ALPHA | FMT_DEDUCED_ALPHA,
+                Fmt::COLOR | Fmt::ALPHA | Fmt::ALPHA_DEDUCED,
             ),
             b"DXT2" | b"DXT3" => (
                 TextureFormat::Bc2RgbaUnorm,
-                FMT_COLOR | FMT_ALPHA | FMT_PLAIN,
+                Fmt::COLOR | Fmt::ALPHA | Fmt::PLAIN,
             ),
             b"DXT4" | b"DXT5" => (
                 TextureFormat::Bc3RgbaUnorm,
-                FMT_COLOR | FMT_ALPHA | FMT_PLAIN,
+                Fmt::COLOR | Fmt::ALPHA | Fmt::PLAIN,
             ),
-            b"DXTA" => (TextureFormat::Bc4RUnorm, FMT_ALPHA | FMT_PLAIN),
-            b"DXTN" | b"3DCX" | b"BC5X" => (TextureFormat::Bc5RgUnorm, FMT_BICOLOR),
+            b"DXTA" => (TextureFormat::Bc4RUnorm, Fmt::ALPHA | Fmt::PLAIN),
+            b"DXTN" | b"3DCX" | b"BC5X" => (TextureFormat::Bc5RgUnorm, Fmt::BICOLOR),
             b"BC7X" => (
                 TextureFormat::Bc7RgbaUnorm,
-                FMT_COLOR | FMT_ALPHA | FMT_PLAIN,
+                Fmt::COLOR | Fmt::ALPHA | Fmt::PLAIN,
             ),
             _ => return Err(std::io::ErrorKind::InvalidData.into()),
         };
@@ -83,7 +81,7 @@ impl AssetLoader for ImageLoader {
                 return Err(std::io::ErrorKind::UnexpectedEof.into());
             }
 
-            let compression_flags = bytes.read_le::<u32>()?;
+            let _compression = Cmp::from_bits_retain(bytes.read_le::<u32>()?);
 
             let _bytes = bytes.split_at(size);
             bytes = _bytes.1;
@@ -99,8 +97,8 @@ impl AssetLoader for ImageLoader {
 
             inflate(
                 block_size,
-                format_flags,
-                compression_flags,
+                _format,
+                _compression,
                 _bytes.0,
                 &mut data[start..],
             )?;

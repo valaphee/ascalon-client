@@ -1,6 +1,6 @@
 use std::{os::windows::ffi::OsStrExt as _, path::Path};
 
-use ascalon_asset::{archive::Archive, file_name_to_id};
+use ascalon_asset::{archive::Archive, file_id_from_name};
 use bevy::{
     app::{App, Plugin},
     asset::{
@@ -34,7 +34,7 @@ impl bevy::asset::io::AssetReader for AssetReader {
     async fn read<'a>(&'a self, path: &'a Path) -> Result<VecReader, AssetReaderError> {
         let mut file_name = path.as_os_str().encode_wide();
         let file_id =
-            file_name_to_id(&[file_name.next().unwrap(), file_name.next().unwrap()]).unwrap();
+            file_id_from_name(&[file_name.next().unwrap(), file_name.next().unwrap()]).unwrap();
 
         Ok(VecReader::new(self.0.read(file_id)?))
     }

@@ -206,8 +206,8 @@ pub struct ItemContainer {
 }
 
 bitflags::bitflags! {
-    #[repr(transparent)]
     #[derive(Debug)]
+    #[repr(transparent)]
     pub struct ItemContainerFlags: u32 {
         const SHOW_SPLASH = 1 << 1;
     }

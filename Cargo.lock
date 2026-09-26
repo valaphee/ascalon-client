@@ -298,8 +298,10 @@ checksum = "175571dd1d178ced59193a6fc02dde1b972eb0bc56c892cde9beeceac5bf0f6b"
 [[package]]
 name = "ascalon-asset"
 version = "0.1.0"
+source = "git+https://github.com/valaphee/ascalon.git?rev=a1545ef319d76e5147ca256a18b2b4be24e8fba3#a1545ef319d76e5147ca256a18b2b4be24e8fba3"
 dependencies = [
  "ascalon-packfile-schema",
+ "bitflags 2.13.2",
  "proc-macro2",
  "quote",
  "rc4",
@@ -323,7 +325,7 @@ dependencies = [
 [[package]]
 name = "ascalon-network"
 version = "0.1.0"
-source = "git+https://github.com/valaphee/ascalon.git?rev=3bf978473f50710c57f0f3b1a9a18df3e33a4eee#3bf978473f50710c57f0f3b1a9a18df3e33a4eee"
+source = "git+https://github.com/valaphee/ascalon.git?rev=a1545ef319d76e5147ca256a18b2b4be24e8fba3#a1545ef319d76e5147ca256a18b2b4be24e8fba3"
 dependencies = [
  "bytes",
  "lz4_flex",
@@ -334,6 +336,7 @@ dependencies = [
 [[package]]
 name = "ascalon-packfile-schema"
 version = "0.1.0"
+source = "git+https://github.com/valaphee/ascalon.git?rev=a1545ef319d76e5147ca256a18b2b4be24e8fba3#a1545ef319d76e5147ca256a18b2b4be24e8fba3"
 dependencies = [
  "quick-xml 0.42.0",
 ]
@@ -341,7 +344,7 @@ dependencies = [
 [[package]]
 name = "ascalon-protocol"
 version = "0.1.0"
-source = "git+https://github.com/valaphee/ascalon.git?rev=3bf978473f50710c57f0f3b1a9a18df3e33a4eee#3bf978473f50710c57f0f3b1a9a18df3e33a4eee"
+source = "git+https://github.com/valaphee/ascalon.git?rev=a1545ef319d76e5147ca256a18b2b4be24e8fba3#a1545ef319d76e5147ca256a18b2b4be24e8fba3"
 dependencies = [
  "ascalon-protocol-schema",
  "bytes",
@@ -351,7 +354,7 @@ dependencies = [
 [[package]]
 name = "ascalon-protocol-schema"
 version = "0.1.0"
-source = "git+https://github.com/valaphee/ascalon.git?rev=3bf978473f50710c57f0f3b1a9a18df3e33a4eee#3bf978473f50710c57f0f3b1a9a18df3e33a4eee"
+source = "git+https://github.com/valaphee/ascalon.git?rev=a1545ef319d76e5147ca256a18b2b4be24e8fba3#a1545ef319d76e5147ca256a18b2b4be24e8fba3"
 dependencies = [
  "quick-xml 0.42.0",
 ]
