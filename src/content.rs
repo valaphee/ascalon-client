@@ -6,11 +6,12 @@ use zerocopy::FromBytes as _;
 
 use crate::asset::Packfile;
 
-mod paint;
 mod item;
 mod map;
+mod paint;
+mod skin;
 
-pub use {paint::*, item::*, map::*};
+pub use {item::*, map::*, paint::*, skin::*};
 
 pub struct ContentPlugin;
 
@@ -179,6 +180,10 @@ impl ContentType for Item {
 
 impl ContentType for Map {
     const TYPE_ID: u32 = 0x2D;
+}
+
+impl ContentType for Skin {
+    const TYPE_ID: u32 = 0x42;
 }
 
 #[repr(C)]

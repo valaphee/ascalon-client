@@ -1,0 +1,48 @@
+use ascalon_asset::packfile::{Ptr, WcharPtr};
+
+use super::{Guid, Name};
+
+#[derive(Debug)]
+#[repr(C)]
+pub struct Skin {
+    pub contentGuid: Guid,
+    pub contentType: u32,
+    pub contentUid: u32,
+    pub contentName: Ptr<Name>,
+    pub contentFullName: Ptr<Name>,
+    pub dataId: u32,
+    pub _2c: u32,
+    pub _30: WcharPtr,
+    pub _38: Ptr<()>,
+    pub _40: u32,
+    pub _44: u32,
+    pub _48: WcharPtr,
+    pub _50: u32,
+    pub _54: u32,
+    pub icon: WcharPtr,
+    pub _60: u32,
+    pub _64: u32,
+    pub name: u32,
+    pub _6c: u32,
+    pub description: u32,
+    pub _74: u32,
+    pub _78: Ptr<()>,
+    pub _80: u32,
+    pub _84: u32,
+    pub _88: Ptr<()>,
+    pub _90: u32,
+    pub _94: u32,
+    pub _98: u32,
+    pub _9c: u32,
+    pub _a0: u32,
+    pub _a4: u32,
+    pub _a8: Ptr<()>,
+    pub _b0: u32,
+    pub _b4: u32,
+    pub _b8: u32,
+    pub _bc: u32,
+    pub _c0: u32,
+    pub _c4: u32,
+    pub _c8: u32,
+    pub _cc: u32,
+}

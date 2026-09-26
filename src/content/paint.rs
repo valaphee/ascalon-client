@@ -1,4 +1,4 @@
-use ascalon_asset::packfile::{ArrayPtr, Ptr};
+use ascalon_asset::packfile::Ptr;
 
 use super::{Guid, Name};
 
