@@ -1,12 +1,11 @@
 #![feature(f16, read_array, read_le)]
+#![allow(dead_code)]
 
 use bevy::prelude::*;
 
-use crate::{
-    asset::{AssetLoaderPlugin, AssetSourcePlugin},
-    content::{Content, ContentPlugin},
-    strings::{Strings, StringsPlugin},
-};
+use crate::asset::{AssetLoaderPlugin, AssetSourcePlugin};
+use crate::content::{Content, ContentPlugin};
+use crate::strings::{Strings, StringsPlugin};
 
 mod asset;
 mod content;

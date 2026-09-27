@@ -5,10 +5,18 @@ use std::path::PathBuf;
 use std::sync::OnceLock;
 
 use ascalon_asset::packfile::txtm::TextPackManifest;
+use bevy::app::{App, Plugin, Update};
 use bevy::asset::io::{Reader, VecReader};
-use bevy::asset::{AssetLoader, LoadContext, VisitAssetDependencies};
-use bevy::ecs::system::SystemParam;
-use bevy::prelude::*;
+use bevy::asset::{
+    Asset, AssetApp as _, AssetLoader, AssetServer, Assets, Handle, LoadContext,
+    VisitAssetDependencies,
+};
+use bevy::ecs::resource::Resource;
+use bevy::ecs::schedule::IntoScheduleConfigs as _;
+use bevy::ecs::schedule::common_conditions::{not, resource_exists};
+use bevy::ecs::system::{Commands, Res, SystemParam};
+use bevy::ecs::world::{FromWorld, World};
+use bevy::reflect::TypePath;
 use zerocopy::FromBytes as _;
 
 use crate::asset::Packfile;
@@ -38,9 +46,9 @@ impl FromWorld for StringsHandle {
 
 enum StringsChunkEntry {
     Encrypted {
-        offset: u16,
+        base: u16,
         bits: u16,
-        data: Box<[u8]>,
+        bytes: Box<[u8]>,
     },
     String(String),
 }
@@ -81,21 +89,21 @@ impl AssetLoader for StringsChunkLoader {
                 return Err(std::io::ErrorKind::UnexpectedEof.into());
             }
 
-            let offset = bytes.read_le::<u16>()?;
+            let base = bytes.read_le::<u16>()?;
             let bits = bytes.read_le::<u16>()?;
 
             let _bytes = bytes.split_at(size - 6);
             bytes = _bytes.1;
 
-            entries.push(if offset == 0 {
+            entries.push(if base == 0 {
                 StringsChunkEntry::String(
                     String::from_utf16le(_bytes.0).map_err(|_| std::io::ErrorKind::InvalidData)?,
                 )
             } else {
                 StringsChunkEntry::Encrypted {
-                    offset,
+                    base,
                     bits,
-                    data: _bytes.0.to_vec().into_boxed_slice(),
+                    bytes: _bytes.0.to_vec().into_boxed_slice(),
                 }
             });
         }
@@ -133,7 +141,7 @@ impl Strings<'_> {
         let language = unsafe { manifest.languages.as_slice().get(self.state.language)? };
         let filenames = unsafe { language.filenames.as_slice() };
 
-        let handle = self.state.strings[file_index].get_or_init(|| {
+        let handle = self.state.strings.get(file_index)?.get_or_init(|| {
             self.asset_server
                 .load(PathBuf::from(OsString::from_wide(unsafe {
                     filenames[file_index].as_slice()

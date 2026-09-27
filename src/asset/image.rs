@@ -1,15 +1,11 @@
 use std::io::Read as _;
 
 use ascalon_asset::texture::{Cmp, Fmt, inflate};
-use bevy::{
-    asset::{
-        AssetLoader, LoadContext, RenderAssetUsages,
-        io::{Reader, VecReader},
-    },
-    image::Image,
-    reflect::TypePath,
-    render::render_resource::{Extent3d, TextureDimension, TextureFormat},
-};
+use bevy::asset::io::{Reader, VecReader};
+use bevy::asset::{AssetLoader, LoadContext, RenderAssetUsages};
+use bevy::image::Image;
+use bevy::reflect::TypePath;
+use bevy::render::render_resource::{Extent3d, TextureDimension, TextureFormat};
 
 #[derive(Default, TypePath)]
 pub struct ImageLoader;

@@ -5,12 +5,12 @@ use super::{Guid, Name};
 #[derive(Debug)]
 #[repr(C)]
 pub struct Skin {
-    pub contentGuid: Guid,
-    pub contentType: u32,
-    pub contentUid: u32,
-    pub contentName: Ptr<Name>,
-    pub contentFullName: Ptr<Name>,
-    pub dataId: u32,
+    pub content_guid: Guid,
+    pub content_type: u32,
+    pub content_uid: u32,
+    pub content_name: Ptr<Name>,
+    pub content_full_name: Ptr<Name>,
+    pub data_id: u32,
     pub _2c: u32,
     pub _30: WcharPtr,
     pub _38: Ptr<()>,

@@ -1,14 +1,14 @@
-use std::{os::windows::ffi::OsStrExt as _, path::Path};
+use std::os::windows::ffi::OsStrExt as _;
+use std::path::Path;
 
-use ascalon_asset::{archive::Archive, file_id_from_name};
-use bevy::{
-    app::{App, Plugin},
-    asset::{
-        Asset, AssetApp, AssetLoader, LoadContext,
-        io::{AssetReaderError, AssetSourceBuilder, AssetSourceId, PathStream, Reader, VecReader},
-    },
-    reflect::TypePath,
+use ascalon_asset::archive::Archive;
+use ascalon_asset::file_id_from_name;
+use bevy::app::{App, Plugin};
+use bevy::asset::io::{
+    AssetReaderError, AssetSourceBuilder, AssetSourceId, PathStream, Reader, VecReader,
 };
+use bevy::asset::{Asset, AssetApp, AssetLoader, LoadContext};
+use bevy::reflect::TypePath;
 
 mod image;
 mod model;

@@ -1,17 +1,28 @@
-use std::{collections::HashMap, fmt};
+use std::collections::HashMap;
+use std::fmt;
 
-use ascalon_asset::packfile::{WcharPtr, cntc::PackContent};
-use bevy::{asset::VisitAssetDependencies, prelude::*};
+use ascalon_asset::packfile::WcharPtr;
+use ascalon_asset::packfile::cntc::PackContent;
+use bevy::app::{App, Plugin, Update};
+use bevy::asset::{AssetServer, Assets, Handle, VisitAssetDependencies};
+use bevy::ecs::resource::Resource;
+use bevy::ecs::schedule::IntoScheduleConfigs as _;
+use bevy::ecs::schedule::common_conditions::{not, resource_exists};
+use bevy::ecs::system::{Commands, Res};
+use bevy::ecs::world::{FromWorld, World};
 use zerocopy::FromBytes as _;
 
 use crate::asset::Packfile;
 
+mod color;
 mod item;
 mod map;
-mod paint;
 mod skin;
 
-pub use {item::*, map::*, paint::*, skin::*};
+pub use color::*;
+pub use item::*;
+pub use map::*;
+pub use skin::*;
 
 pub struct ContentPlugin;
 
@@ -170,7 +181,7 @@ pub trait ContentType {
     const TYPE_ID: u32;
 }
 
-impl ContentType for Paint {
+impl ContentType for Color {
     const TYPE_ID: u32 = 0x09;
 }
 
