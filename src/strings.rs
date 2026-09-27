@@ -1,9 +1,7 @@
-use std::ffi::OsString;
 use std::io::Read as _;
-use std::os::windows::ffi::OsStringExt;
-use std::path::PathBuf;
 use std::sync::OnceLock;
 
+use ascalon_asset::file_id_from_name;
 use ascalon_asset::packfile::txtm::TextPackManifest;
 use bevy::app::{App, Plugin, Update};
 use bevy::asset::io::{Reader, VecReader};
@@ -40,7 +38,7 @@ struct StringsHandle(#[dependency] Handle<Packfile>);
 
 impl FromWorld for StringsHandle {
     fn from_world(world: &mut World) -> Self {
-        Self(world.resource::<AssetServer>().load("댐ā"))
+        Self(world.resource::<AssetServer>().load("110865"))
     }
 }
 
@@ -142,10 +140,11 @@ impl Strings<'_> {
         let filenames = unsafe { language.filenames.as_slice() };
 
         let handle = self.state.strings.get(file_index)?.get_or_init(|| {
-            self.asset_server
-                .load(PathBuf::from(OsString::from_wide(unsafe {
-                    filenames[file_index].as_slice()
-                })))
+            self.asset_server.load(
+                file_id_from_name(unsafe { filenames[file_index].as_slice() })
+                    .unwrap()
+                    .to_string(),
+            )
         });
 
         self.assets

@@ -4,6 +4,9 @@ cargo-features = ["panic-immediate-abort"]
 name = "ascalon-client"
 version = "0.1.0"
 edition = "2024"
+description = "Unofficial Guild Wars 2 client"
+license = "MIT"
+repository = "https://github.com/valaphee/ascalon-client"
 
 [features]
 dev = ["bevy/free_camera"]
