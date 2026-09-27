@@ -17,11 +17,13 @@ use crate::asset::Packfile;
 mod color;
 mod item;
 mod map;
+mod skill;
 mod skin;
 
 pub use color::*;
 pub use item::*;
 pub use map::*;
+pub use skill::*;
 pub use skin::*;
 
 pub struct ContentPlugin;
@@ -193,6 +195,10 @@ impl ContentType for Item {
 
 impl ContentType for Map {
     const TYPE_ID: u32 = 0x2D;
+}
+
+impl ContentType for Skill {
+    const TYPE_ID: u32 = 0x40;
 }
 
 impl ContentType for Skin {

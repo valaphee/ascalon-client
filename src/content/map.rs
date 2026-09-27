@@ -28,7 +28,7 @@ pub struct Map {
     pub _088: u32,
     pub _08c: u32,
     pub _090: WcharPtr,
-    pub _098: u32,
+    pub _098: MapFlags,
     pub _09c: u32,
     pub _0a0: u32,
     pub _0a4: u32,
@@ -126,4 +126,12 @@ pub enum MapType {
     _16 = 16,
     Unknown = 18,
     _19 = 19,
+}
+
+bitflags::bitflags! {
+    #[derive(Debug)]
+    #[repr(transparent)]
+    pub struct MapFlags: u32 {
+        const INSTANCE_CHECKPOINT_OVERRIDE = 1 << 17;
+    }
 }

@@ -12,7 +12,7 @@ pub struct Item {
     pub content_full_name: Ptr<Name>,
     pub data_id: u32,
     pub r#type: ItemType,
-    pub _38: u32,
+    pub flags: ItemFlags,
     pub _3c: u32,
     pub icon: WcharPtr,
     pub _48: u32,
@@ -62,6 +62,14 @@ pub enum ItemType {
     Trophy(Ptr<ItemTrophy>) = 22,
     UpgradeComponent(Ptr<ItemUpgradeComponent>) = 23,
     Weapon(Ptr<ItemWeapon>) = 24,
+}
+
+bitflags::bitflags! {
+    #[derive(Debug)]
+    #[repr(transparent)]
+    pub struct ItemFlags: u32 {
+        const NO_MOVE = 1 << 28;
+    }
 }
 
 #[derive(Debug)]
