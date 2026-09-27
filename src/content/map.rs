@@ -1,6 +1,6 @@
-use ascalon_asset::packfile::{Ptr, WcharPtr};
+use ascalon_asset::packfile::{Guid, Ptr, WcharPtr};
 
-use super::{Guid, Name};
+use super::Name;
 
 #[derive(Debug)]
 #[repr(C)]

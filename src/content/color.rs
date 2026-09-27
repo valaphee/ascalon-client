@@ -1,6 +1,6 @@
-use ascalon_asset::packfile::Ptr;
+use ascalon_asset::packfile::{Guid, Ptr};
 
-use super::{Guid, Name};
+use super::Name;
 
 #[derive(Debug)]
 #[repr(C)]

@@ -205,35 +205,6 @@ impl ContentType for Skin {
     const TYPE_ID: u32 = 0x42;
 }
 
-#[repr(C)]
-pub struct Guid(u32, u16, u16, [u8; 8]);
-
-impl fmt::Display for Guid {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "{:08x}-{:04x}-{:04x}-{:02x}{:02x}-{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}",
-            self.0,
-            self.1,
-            self.2,
-            self.3[0],
-            self.3[1],
-            self.3[2],
-            self.3[3],
-            self.3[4],
-            self.3[5],
-            self.3[6],
-            self.3[7],
-        )
-    }
-}
-
-impl fmt::Debug for Guid {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        fmt::Display::fmt(self, f)
-    }
-}
-
 #[derive(Debug)]
 #[repr(C)]
 pub struct Name {
