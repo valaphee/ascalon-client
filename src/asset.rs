@@ -8,7 +8,12 @@ use bevy::asset::io::{
 use bevy::asset::{Asset, AssetApp, AssetLoader, LoadContext};
 use bevy::reflect::TypePath;
 
+use crate::asset::image::ImageLoader;
+use crate::asset::map::MapLoader;
+use crate::asset::model::ModelLoader;
+
 mod image;
+mod map;
 mod model;
 
 pub struct AssetSourcePlugin;
@@ -30,10 +35,14 @@ struct AssetReader(Archive);
 
 impl bevy::asset::io::AssetReader for AssetReader {
     async fn read<'a>(&'a self, path: &'a Path) -> Result<VecReader, AssetReaderError> {
-        Ok(VecReader::new(
-            self.0
-                .read(path.to_str().unwrap().parse::<u32>().unwrap())?,
-        ))
+        let id = path
+            .file_stem()
+            .and_then(|stem| stem.to_str())
+            .unwrap()
+            .parse::<u32>()
+            .unwrap();
+
+        Ok(VecReader::new(self.0.read(id)?))
     }
 
     async fn read_meta<'a>(
@@ -62,9 +71,11 @@ pub struct AssetLoaderPlugin;
 
 impl Plugin for AssetLoaderPlugin {
     fn build(&self, app: &mut App) {
-        app.init_asset::<Packfile>()
-            .init_asset_loader::<PackfileLoader>()
-            .init_asset_loader::<image::ImageLoader>();
+        app.init_asset_loader::<ImageLoader>()
+            .init_asset_loader::<MapLoader>()
+            .init_asset_loader::<ModelLoader>()
+            .init_asset::<Packfile>()
+            .init_asset_loader::<PackfileLoader>();
     }
 }
 

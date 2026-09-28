@@ -8,19 +8,16 @@ description = "Unofficial Guild Wars 2 client"
 license = "MIT"
 repository = "https://github.com/valaphee/ascalon-client"
 
-[features]
-dev = ["bevy/free_camera"]
-
 [dependencies]
 bitflags = "2"
 uuid = "1"
 zerocopy = "0.8"
 
-bevy = { git = "https://github.com/bevyengine/bevy.git", rev = "1a6377e33b26b6d744f96e35dbe9392e86602ac3", features = ["2d", "3d", "ui"] }
+bevy = { git = "https://github.com/bevyengine/bevy.git", rev = "1a6377e33b26b6d744f96e35dbe9392e86602ac3", features = ["2d", "3d", "ui", "free_camera"] }
 
-ascalon-asset = { git = "https://github.com/valaphee/ascalon.git", rev = "2e05edfad2418e9421791d09cb510757005a2efd" }
-ascalon-network = { git = "https://github.com/valaphee/ascalon.git", rev = "2e05edfad2418e9421791d09cb510757005a2efd" }
-ascalon-protocol = { git = "https://github.com/valaphee/ascalon.git", rev = "2e05edfad2418e9421791d09cb510757005a2efd" }
+ascalon-asset = { git = "https://github.com/valaphee/ascalon.git", rev = "c20719408d8160012360f4dfa547e0befd485067" }
+ascalon-network = { git = "https://github.com/valaphee/ascalon.git", rev = "c20719408d8160012360f4dfa547e0befd485067" }
+ascalon-protocol = { git = "https://github.com/valaphee/ascalon.git", rev = "c20719408d8160012360f4dfa547e0befd485067" }
 
 [profile.dev]
 opt-level = 1

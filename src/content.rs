@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::fmt;
 
 use ascalon_asset::packfile::WcharPtr;
 use ascalon_asset::packfile::cntc::PackContent;

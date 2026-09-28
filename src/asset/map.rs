@@ -1,5 +1,5 @@
 use ascalon_asset::packfile::Packfile;
-use ascalon_asset::packfile::modl::{ModelFileDataV70, ModelFileGeometryV1};
+use ascalon_asset::packfile::mapc::{PackMapPropV21, PackMapTerrainV15};
 use bevy::asset::io::{Reader, VecReader};
 use bevy::asset::{AssetLoader, LoadContext};
 use bevy::reflect::TypePath;
@@ -7,9 +7,9 @@ use bevy::world_serialization::WorldAsset;
 use zerocopy::FromBytes;
 
 #[derive(Default, TypePath)]
-pub struct ModelLoader;
+pub struct MapLoader;
 
-impl AssetLoader for ModelLoader {
+impl AssetLoader for MapLoader {
     type Asset = WorldAsset;
     type Settings = ();
     type Error = std::io::Error;
@@ -24,7 +24,7 @@ impl AssetLoader for ModelLoader {
         let bytes = std::mem::take(&mut reader.bytes);
 
         let packfile = Packfile::new(bytes)?;
-        if &packfile.r#type() != b"MODL" {
+        if &packfile.r#type() != b"mapc" {
             return Err(std::io::Error::new(
                 std::io::ErrorKind::InvalidData,
                 "invalid magic",
@@ -33,13 +33,11 @@ impl AssetLoader for ModelLoader {
 
         for chunk in packfile.chunks() {
             match &chunk.name() {
-                b"MODL" => {
-                    let data = ModelFileDataV70::ref_from_prefix(chunk.bytes()).unwrap().0;
+                b"trn\0" => {
+                    let data = PackMapTerrainV15::ref_from_prefix(chunk.bytes()).unwrap().0;
                 }
-                b"GEOM" => {
-                    let data = ModelFileGeometryV1::ref_from_prefix(chunk.bytes())
-                        .unwrap()
-                        .0;
+                b"prp2" => {
+                    let data = PackMapPropV21::ref_from_prefix(chunk.bytes()).unwrap().0;
                 }
                 _ => {}
             }

@@ -20,11 +20,9 @@ fn main() {
         AssetLoaderPlugin,
         ContentPlugin,
         StringsPlugin,
+        bevy::camera_controller::free_camera::FreeCameraPlugin,
     ))
     .add_systems(Startup, setup);
-
-    #[cfg(feature = "dev")]
-    app.add_plugins(bevy::camera_controller::free_camera::FreeCameraPlugin);
 
     app.run();
 }
@@ -32,15 +30,6 @@ fn main() {
 fn setup(mut commands: Commands) {
     commands.spawn((
         Camera3d::default(),
-        #[cfg(feature = "dev")]
         bevy::camera_controller::free_camera::FreeCamera::default(),
-    ));
-
-    commands.spawn((
-        DirectionalLight {
-            illuminance: 10_000.0,
-            ..default()
-        },
-        Transform::from_rotation(Quat::from_euler(EulerRot::XYZ, -1.0, -1.0, 0.0)),
     ));
 }

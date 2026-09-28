@@ -1,7 +1,6 @@
 use std::io::Read as _;
 use std::sync::OnceLock;
 
-use ascalon_asset::file_id_from_name;
 use ascalon_asset::packfile::txtm::TextPackManifest;
 use bevy::app::{App, Plugin, Update};
 use bevy::asset::io::{Reader, VecReader};
@@ -141,7 +140,7 @@ impl Strings<'_> {
 
         let handle = self.state.strings.get(file_index)?.get_or_init(|| {
             self.asset_server.load(
-                file_id_from_name(unsafe { filenames[file_index].as_slice() })
+                unsafe { filenames[file_index].file_id() }
                     .unwrap()
                     .to_string(),
             )
