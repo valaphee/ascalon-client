@@ -1,6 +1,6 @@
 use std::collections::HashMap;
+use std::fmt::Debug;
 
-use ascalon_asset::packfile::WcharPtr;
 use ascalon_asset::packfile::cntc::PackContent;
 use bevy::app::{App, Plugin, Update};
 use bevy::asset::{AssetServer, Assets, Handle, VisitAssetDependencies};
@@ -158,6 +158,17 @@ pub fn init_content(
     commands.insert_resource(Content(index));
 }
 
+#[derive(Debug)]
+#[repr(C)]
+pub struct Name {
+    pub _00: *const u16,
+    pub _08: u32,
+    _0c: u32, // pad
+    pub _10: *const u16,
+    pub _18: u32,
+    _1c: u32, // pad
+}
+
 pub trait ContentType {
     const TYPE_ID: u32;
 }
@@ -197,6 +208,13 @@ impl ContentType for Map {
     const TYPE_ID: u32 = 0x2D;
 }
 
+mod progress;
+pub use progress::*;
+
+impl ContentType for Progress {
+    const TYPE_ID: u32 = 0x35;
+}
+
 mod skill;
 pub use skill::*;
 
@@ -209,15 +227,4 @@ pub use skin::*;
 
 impl ContentType for Skin {
     const TYPE_ID: u32 = 0x42;
-}
-
-#[derive(Debug)]
-#[repr(C)]
-pub struct Name {
-    pub _00: WcharPtr,
-    pub _08: u32,
-    pub _0c: u32,
-    pub _10: WcharPtr,
-    pub _18: u32,
-    pub _1c: u32,
 }

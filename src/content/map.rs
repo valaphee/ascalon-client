@@ -1,56 +1,53 @@
-use ascalon_asset::packfile::{Guid, Ptr, WcharPtr};
+use super::{Name, Progress};
 
-use super::Name;
-
-#[derive(Debug)]
 #[repr(C)]
 pub struct Map {
-    pub content_guid: Guid,
+    pub content_guid: [u8; 16],
     pub content_type: u32,
     pub content_uid: u32,
-    pub content_name: Ptr<Name>,
-    pub content_full_name: Ptr<Name>,
+    pub content_name: *const Name,
+    pub content_full_name: *const Name,
     pub data_id: u32,
     pub r#type: MapType,
     pub _030: u32,
     pub _034: u32,
-    pub _038: WcharPtr,
-    pub _040: WcharPtr,
-    pub _048: WcharPtr,
-    pub _050: WcharPtr,
-    pub _058: WcharPtr,
-    pub _060: WcharPtr,
-    pub file: WcharPtr,
+    pub _038: *const u16, // file
+    pub _040: *const u16, // file
+    pub _048: *const u16, // file
+    pub _050: *const u16, // file
+    pub _058: *const u16, // file
+    pub _060: *const u16, // file
+    pub file: *const u16, // file
     pub _070: u32,
     pub _074: u32,
-    pub _078: WcharPtr,
-    pub _080: Ptr<()>,
+    pub _078: *const u16, // file
+    pub _080: *const (),
     pub _088: u32,
     pub _08c: u32,
-    pub _090: WcharPtr,
+    pub _090: *const u16, // file
     pub _098: MapFlags,
     pub _09c: u32,
     pub _0a0: u32,
     pub _0a4: u32,
     pub min_level: u32,
     pub max_level: u32,
-    pub _0b0: WcharPtr,
+    pub _0b0: *const u16,
     pub _0b8: u32,
     pub _0bc: u32,
-    pub _0c0: Ptr<()>,
-    pub _0c8: Ptr<()>,
-    pub _0d0: Ptr<()>,
-    pub _0d8: WcharPtr,
+    pub _0c0: *const (), // type 0x02B
+    pub _0c8: *const (), // type 0x001
+    pub _0d0: *const (), // type 0x04A
+    pub _0d8: *const u16,
     pub _0e0: u32,
     pub _0e4: u32,
     pub _0e8: u32,
     pub _0ec: u32,
     pub _0f0: u32,
     pub _0f4: u32,
-    pub _0f8: Ptr<()>,
-    pub pvp: Ptr<()>,
-    pub _108: Ptr<()>,
-    pub _110: WcharPtr,
+    pub _0f8: *const (), // type 0x0AD
+    pub pvp: *const (),
+    pub _108: *const (), // type 0x03C
+    pub _110: *const u16,
     pub _118: u32,
     pub _11c: u32,
     pub _120: u32,
@@ -75,40 +72,39 @@ pub struct Map {
     pub description: u32,
     pub _170: u32,
     pub _174: u32,
-    pub _178: Ptr<()>,
+    pub _178: *const (),
     pub _180: u32,
     pub _184: u32,
     pub _188: u32,
     pub _18c: u32,
-    pub _190: Ptr<()>,
+    pub _190: *const (),
     pub _198: u32,
     pub _19c: u32,
-    pub _1a0: Guid,
+    pub _1a0: [u8; 16],
     pub _1b0: u32,
     pub _1b4: u32,
-    pub _1b8: Ptr<()>,
+    pub _1b8: *const (), // type 0x109
     pub _1c0: u32,
     pub _1c4: u32,
     pub _1c8: u32,
     pub _1cc: u32,
-    pub _1d0: Ptr<()>,
-    pub _1d8: Ptr<()>,
+    pub _1d0: *const (),
+    pub _1d8: *const Progress,
     pub _1e0: u32,
     pub _1e4: u32,
     pub _1e8: u32,
     pub _1ec: u32,
-    pub _1f0: Ptr<()>,
-    pub _1f8: Ptr<()>,
-    pub _200: Ptr<()>,
+    pub _1f0: *const Progress,
+    pub _1f8: *const (),
+    pub _200: *const (),
     pub _208: u32,
     pub _20c: u32,
-    pub _210: Ptr<()>,
+    pub _210: *const (),
     pub _218: u32,
     pub _21c: u32,
-    pub _220: Ptr<()>,
+    pub _220: *const (), // type 0x0A8
 }
 
-#[derive(Debug)]
 #[repr(u32)]
 pub enum MapType {
     _0 = 0,

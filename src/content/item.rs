@@ -1,27 +1,25 @@
-use ascalon_asset::packfile::{Guid, Ptr, WcharPtr};
+use super::{Name, Progress};
 
-use super::Name;
-
-#[derive(Debug)]
 #[repr(C)]
 pub struct Item {
-    pub content_guid: Guid,
+    pub content_guid: [u8; 16],
     pub content_type: u32,
     pub content_uid: u32,
-    pub content_name: Ptr<Name>,
-    pub content_full_name: Ptr<Name>,
+    pub content_name: *const Name,
+    pub content_full_name: *const Name,
     pub data_id: u32,
     pub r#type: ItemType,
+    pub item: _Item,
     pub flags: ItemFlags,
     pub _3c: u32,
-    pub icon: WcharPtr,
+    pub icon: *const u16,
     pub _48: u32,
     pub _level: u32,
-    pub _50: Ptr<()>,
-    pub _58: Ptr<()>,
+    pub _50: *const Progress,
+    pub _58: *const Progress,
     pub rarity: ItemRarity,
     pub _64: u32,
-    pub _68: Ptr<()>,
+    pub _68: *const (),
     pub _70: u32,
     pub level: u32,
     pub _78: u32,
@@ -30,65 +28,60 @@ pub struct Item {
     pub description: u32,
     pub _88: u32,
     pub _8c: u32,
-    pub _90: Ptr<()>,
+    pub _90: *const (),
     pub _98: u32,
     pub _9c: u32,
     pub _a0: u32,
-    pub _a4: u32,
-    pub _a8: u32,
-    pub _ac: u32,
 }
 
-#[derive(Debug)]
-#[repr(C, u32)]
-pub enum ItemType {
-    Armor(Ptr<ItemArmor>) = 0,
-    Augment(Ptr<ItemAugment>) = 1,
-    Back(Ptr<ItemBack>) = 2,
-    Bag(Ptr<ItemBag>) = 3,
-    Consumable(Ptr<ItemConsumable>) = 4,
-    Container(Ptr<ItemContainer>) = 5,
-    CraftingMaterial(Ptr<ItemCraftingMaterial>) = 6,
-    Gathering(Ptr<ItemGathering>) = 9,
-    Gizmo(Ptr<ItemGizmo>) = 10,
-    JadeTechModule(Ptr<ItemJadeTechModule>) = 11,
-    Key = 12,
-    MiniPet(Ptr<ItemMiniPet>) = 15,
-    PowerCore(Ptr<ItemPowerCore>) = 17,
-    Relic(Ptr<ItemRelic>) = 18,
-    Tool(Ptr<ItemTool>) = 19,
-    TraitGuide(Ptr<ItemTraitGuide>) = 20,
-    Trinket(Ptr<ItemTrinket>) = 21,
-    Trophy(Ptr<ItemTrophy>) = 22,
-    UpgradeComponent(Ptr<ItemUpgradeComponent>) = 23,
-    Weapon(Ptr<ItemWeapon>) = 24,
-}
-
-bitflags::bitflags! {
-    #[derive(Debug)]
-    #[repr(transparent)]
-    pub struct ItemFlags: u32 {
-        const NO_MOVE = 1 << 28;
-    }
-}
-
-#[derive(Debug)]
 #[repr(u32)]
-pub enum ItemRarity {
-    Junk = 0,
-    Basic = 1,
-    Fine = 2,
-    Masterwork = 3,
-    Rare = 4,
-    Exotic = 5,
-    Ascended = 6,
-    Legendary = 7,
+pub enum ItemType {
+    Armor = 0,
+    Augment = 1,
+    Back = 2,
+    Bag = 3,
+    Consumable = 4,
+    Container = 5,
+    CraftingMaterial = 6,
+    Gathering = 9,
+    Gizmo = 10,
+    JadeTechModule = 11,
+    Key = 12,
+    MiniPet = 15,
+    PowerCore = 17,
+    Relic = 18,
+    Tool = 19,
+    TraitGuide = 20,
+    Trinket = 21,
+    Trophy = 22,
+    UpgradeComponent = 23,
+    Weapon = 24,
 }
 
-#[derive(Debug)]
+pub union _Item {
+    armor: *const ItemArmor,
+    augment: *const ItemAugment,
+    back: *const ItemBack,
+    bag: *const ItemBag,
+    consumable: *const ItemConsumable,
+    container: *const ItemContainer,
+    crafting_material: *const ItemCraftingMaterial,
+    gathering: *const ItemGathering,
+    gizmo: *const ItemGizmo,
+    jade_tech_module: *const ItemJadeTechModule,
+    mini_pet: *const ItemMiniPet,
+    power_core: *const ItemPowerCore,
+    relic: *const ItemRelic,
+    tool: *const ItemTool,
+    trait_guide: *const ItemTraitGuide,
+    trinket: *const ItemTrinket,
+    trophy: *const ItemTrophy,
+    upgrade_component: *const ItemUpgradeComponent,
+}
+
 #[repr(C)]
 pub struct ItemArmor {
-    pub _00: Ptr<()>,
+    pub _00: *const (),
     pub r#type: u32,
     pub _0c: u32,
     pub _10: u32,
@@ -101,7 +94,7 @@ pub struct ItemArmor {
     pub _2c: u32,
     pub _30: u32,
     pub _34: u32,
-    pub _38: Ptr<()>,
+    pub _38: *const (),
     pub _40: u32,
     pub _44: u32,
     pub _48: u32,
@@ -115,7 +108,6 @@ pub struct ItemArmor {
     pub weight_class: ItemArmorWeightClass,
 }
 
-#[derive(Debug)]
 #[repr(u32)]
 pub enum ItemArmorType {
     Coat = 0,
@@ -127,7 +119,6 @@ pub enum ItemArmorType {
     Shoulders = 6,
 }
 
-#[derive(Debug)]
 #[repr(u32)]
 pub enum ItemArmorWeightClass {
     Clothing = 0,
@@ -136,15 +127,12 @@ pub enum ItemArmorWeightClass {
     Heavy = 3,
 }
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct ItemAugment;
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct ItemBack;
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct ItemBag {
     pub _00: u32,
@@ -160,13 +148,11 @@ pub struct ItemBag {
     pub size: u32,
 }
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct ItemConsumable {
     pub r#type: ItemConsumableType,
 }
 
-#[derive(Debug)]
 #[repr(u32)]
 pub enum ItemConsumableType {
     AppearanceChange = 0,
@@ -186,7 +172,6 @@ pub enum ItemConsumableType {
     Currency = 16,
 }
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct ItemContainer {
     pub flags: ItemContainerFlags,
@@ -214,14 +199,12 @@ pub struct ItemContainer {
 }
 
 bitflags::bitflags! {
-    #[derive(Debug)]
     #[repr(transparent)]
     pub struct ItemContainerFlags: u32 {
         const SHOW_SPLASH = 1 << 1;
     }
 }
 
-#[derive(Debug)]
 #[repr(u32)]
 pub enum ItemContainerType {
     Default = 0,
@@ -230,21 +213,18 @@ pub enum ItemContainerType {
     OpenUi = 3,
 }
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct ItemCraftingMaterial;
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct ItemGathering {
-    pub _00: Ptr<()>,
+    pub _00: *const (),
     pub uses: u32,
     pub _0c: u32,
-    pub _10: Ptr<()>,
+    pub _10: *const (),
     pub r#type: ItemGatheringType,
 }
 
-#[derive(Debug)]
 #[repr(u32)]
 pub enum ItemGatheringType {
     Foraging = 0,
@@ -255,14 +235,12 @@ pub enum ItemGatheringType {
     Lure = 5,
 }
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct ItemGizmo {
     pub _00: u32,
     pub r#type: ItemGizmoType,
 }
 
-#[derive(Debug)]
 #[repr(u32)]
 pub enum ItemGizmoType {
     Default = 0,
@@ -271,40 +249,32 @@ pub enum ItemGizmoType {
     UnlimitedConsumable = 4,
 }
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct ItemJadeTechModule;
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct ItemMiniPet;
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct ItemPowerCore;
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct ItemRelic;
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct ItemTool {
     pub uses: u32,
     pub r#type: ItemToolType,
 }
 
-#[derive(Debug)]
 #[repr(u32)]
 pub enum ItemToolType {
     Salvage = 2,
 }
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct ItemTraitGuide;
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct ItemTrinket {
     pub _00: u32,
@@ -318,7 +288,6 @@ pub struct ItemTrinket {
     pub r#type: ItemTrinketType,
 }
 
-#[derive(Debug)]
 #[repr(u32)]
 pub enum ItemTrinketType {
     Accessory = 0,
@@ -326,25 +295,22 @@ pub enum ItemTrinketType {
     Ring = 2,
 }
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct ItemTrophy;
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct ItemUpgradeComponent {
     pub _00: u32,
     pub _04: u32,
     pub _08: u32,
     pub _0c: u32,
-    pub _10: Ptr<()>,
+    pub _10: *const (),
     pub _18: u32,
     pub _1c: u32,
     pub _20: u32,
     pub r#type: ItemUpgradeComponentType,
 }
 
-#[derive(Debug)]
 #[repr(u32)]
 pub enum ItemUpgradeComponentType {
     Default = 0,
@@ -353,10 +319,9 @@ pub enum ItemUpgradeComponentType {
     Sigil = 3,
 }
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct ItemWeapon {
-    pub _00: Ptr<()>,
+    pub _00: *const (),
     pub _08: u32,
     pub r#type: ItemWeaponType,
     pub _10: u32,
@@ -366,7 +331,6 @@ pub struct ItemWeapon {
     pub _20: u32,
 }
 
-#[derive(Debug)]
 #[repr(u32)]
 pub enum ItemWeaponType {
     Sword = 0,
@@ -393,4 +357,24 @@ pub enum ItemWeaponType {
     Toy = 22,
     ToyTwoHanded = 23,
     _25 = 25,
+}
+
+bitflags::bitflags! {
+    #[derive(Debug)]
+    #[repr(transparent)]
+    pub struct ItemFlags: u32 {
+        const NO_MOVE = 1 << 28;
+    }
+}
+
+#[repr(u32)]
+pub enum ItemRarity {
+    Junk = 0,
+    Basic = 1,
+    Fine = 2,
+    Masterwork = 3,
+    Rare = 4,
+    Exotic = 5,
+    Ascended = 6,
+    Legendary = 7,
 }
