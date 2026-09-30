@@ -9,21 +9,8 @@ use bevy::ecs::schedule::IntoScheduleConfigs as _;
 use bevy::ecs::schedule::common_conditions::{not, resource_exists};
 use bevy::ecs::system::{Commands, Res};
 use bevy::ecs::world::{FromWorld, World};
-use zerocopy::FromBytes as _;
 
 use crate::asset::Packfile;
-
-mod color;
-mod item;
-mod map;
-mod skill;
-mod skin;
-
-pub use color::*;
-pub use item::*;
-pub use map::*;
-pub use skill::*;
-pub use skin::*;
 
 pub struct ContentPlugin;
 
@@ -99,28 +86,19 @@ pub fn init_content(
         .0
         .iter()
         .map(|handle| {
-            PackContent::ref_from_prefix(
-                assets
-                    .get(handle)
-                    .unwrap()
-                    .0
-                    .chunks()
-                    .nth(0)
-                    .unwrap()
-                    .bytes(),
-            )
-            .unwrap()
-            .0
+            let packfile = &assets.get(handle).unwrap().0;
+            let chunk = packfile.chunks().next().unwrap();
+            unsafe { &*(chunk.bytes().as_ptr() as *const PackContent) }
         })
         .collect();
 
     let mut index = HashMap::new();
 
     unsafe {
-        for content_chunk in &content {
-            let data = content_chunk.content.as_ptr();
+        for content_part in &content {
+            let data = content_part.content.as_ptr();
 
-            for fixup in content_chunk.localOffsets.as_slice() {
+            for fixup in content_part.localOffsets.as_slice() {
                 let value = data
                     .add(fixup.relocOffset.get() as usize)
                     .cast_mut()
@@ -129,7 +107,7 @@ pub fn init_content(
                 value.write_unaligned(data as usize + offset);
             }
 
-            for fixup in content_chunk.externalOffsets.as_slice() {
+            for fixup in content_part.externalOffsets.as_slice() {
                 let target = &content[fixup.targetFileIndex.get() as usize];
 
                 let value = data
@@ -140,7 +118,7 @@ pub fn init_content(
                 value.write_unaligned(target.content.as_ptr() as usize + offset);
             }
 
-            for fixup in content_chunk.fileIndices.as_slice() {
+            for fixup in content_part.fileIndices.as_slice() {
                 let value = data
                     .add(fixup.relocOffset.get() as usize)
                     .cast_mut()
@@ -149,20 +127,20 @@ pub fn init_content(
                 value.write_unaligned(content[0].fileRefs.as_slice()[file_index].as_ptr() as usize);
             }
 
-            for fixup in content_chunk.stringIndices.as_slice() {
+            for fixup in content_part.stringIndices.as_slice() {
                 let value = data
                     .add(fixup.relocOffset.get() as usize)
                     .cast_mut()
                     .cast::<usize>();
                 let string_index = usize::from_le(value.read_unaligned());
                 value.write_unaligned(
-                    content_chunk.strings.as_slice()[string_index].as_ptr() as usize
+                    content_part.strings.as_slice()[string_index].as_ptr() as usize
                 );
             }
 
-            for entry in content_chunk.indexEntries.as_slice() {
+            for entry in content_part.indexEntries.as_slice() {
                 let type_id = entry.r#type.get();
-                let data = &content_chunk.content.as_slice()[entry.offset.get() as usize..];
+                let data = &content_part.content.as_slice()[entry.offset.get() as usize..];
 
                 let type_info = &content[0].typeInfos.as_slice()[type_id as usize];
 
@@ -184,21 +162,50 @@ pub trait ContentType {
     const TYPE_ID: u32;
 }
 
+mod achievement;
+pub use achievement::*;
+
+impl ContentType for Achievement {
+    const TYPE_ID: u32 = 0x00;
+}
+
+mod color;
+pub use color::*;
+
 impl ContentType for Color {
     const TYPE_ID: u32 = 0x09;
 }
+
+mod crafting_recipe;
+pub use crafting_recipe::*;
+
+impl ContentType for CraftingRecipe {
+    const TYPE_ID: u32 = 0x0C;
+}
+
+mod item;
+pub use item::*;
 
 impl ContentType for Item {
     const TYPE_ID: u32 = 0x23;
 }
 
+mod map;
+pub use map::*;
+
 impl ContentType for Map {
     const TYPE_ID: u32 = 0x2D;
 }
 
+mod skill;
+pub use skill::*;
+
 impl ContentType for Skill {
     const TYPE_ID: u32 = 0x40;
 }
+
+mod skin;
+pub use skin::*;
 
 impl ContentType for Skin {
     const TYPE_ID: u32 = 0x42;

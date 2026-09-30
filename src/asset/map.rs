@@ -4,7 +4,6 @@ use bevy::asset::io::{Reader, VecReader};
 use bevy::asset::{AssetLoader, LoadContext};
 use bevy::reflect::TypePath;
 use bevy::world_serialization::WorldAsset;
-use zerocopy::FromBytes;
 
 #[derive(Default, TypePath)]
 pub struct MapLoader;
@@ -34,10 +33,10 @@ impl AssetLoader for MapLoader {
         for chunk in packfile.chunks() {
             match &chunk.name() {
                 b"trn\0" => {
-                    let data = PackMapTerrainV15::ref_from_prefix(chunk.bytes()).unwrap().0;
+                    let data = unsafe { &*(chunk.bytes().as_ptr() as *const PackMapTerrainV15) };
                 }
                 b"prp2" => {
-                    let data = PackMapPropV21::ref_from_prefix(chunk.bytes()).unwrap().0;
+                    let data = unsafe { &*(chunk.bytes().as_ptr() as *const PackMapPropV21) };
                 }
                 _ => {}
             }

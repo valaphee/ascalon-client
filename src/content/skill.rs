@@ -37,7 +37,7 @@ pub struct Skill {
     pub _a0: Ptr<()>,
     pub _a8: u32,
     pub _ac: u32,
-    pub _b0: Ptr<()>,
+    pub _b0: Ptr<Skill>,
 }
 
 bitflags::bitflags! {

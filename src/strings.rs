@@ -14,7 +14,6 @@ use bevy::ecs::schedule::common_conditions::{not, resource_exists};
 use bevy::ecs::system::{Commands, Res, SystemParam};
 use bevy::ecs::world::{FromWorld, World};
 use bevy::reflect::TypePath;
-use zerocopy::FromBytes as _;
 
 use crate::asset::Packfile;
 
@@ -162,9 +161,10 @@ fn init_strings(mut commands: Commands, assets: Res<Assets<Packfile>>, handle: R
         return;
     };
 
-    let manifest = TextPackManifest::ref_from_prefix(asset.0.chunks().nth(0).unwrap().bytes())
-        .unwrap()
-        .0;
+    let packfile = &asset.0;
+    let chunk = packfile.chunks().next().unwrap();
+
+    let manifest = unsafe { &*(chunk.bytes().as_ptr() as *const TextPackManifest) };
     let language = unsafe { &manifest.languages.as_slice()[0] };
     let filenames = unsafe { language.filenames.as_slice() };
 

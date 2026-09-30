@@ -2,15 +2,14 @@ use ascalon_asset::packfile::Packfile;
 use ascalon_asset::packfile::modl::{ModelFileDataV70, ModelFileGeometryV1};
 use bevy::asset::io::{Reader, VecReader};
 use bevy::asset::{AssetLoader, LoadContext};
+use bevy::mesh::Mesh;
 use bevy::reflect::TypePath;
-use bevy::world_serialization::WorldAsset;
-use zerocopy::FromBytes;
 
 #[derive(Default, TypePath)]
 pub struct ModelLoader;
 
 impl AssetLoader for ModelLoader {
-    type Asset = WorldAsset;
+    type Asset = Mesh;
     type Settings = ();
     type Error = std::io::Error;
 
@@ -34,12 +33,10 @@ impl AssetLoader for ModelLoader {
         for chunk in packfile.chunks() {
             match &chunk.name() {
                 b"MODL" => {
-                    let data = ModelFileDataV70::ref_from_prefix(chunk.bytes()).unwrap().0;
+                    let data = unsafe { &*(chunk.bytes().as_ptr() as *const ModelFileDataV70) };
                 }
                 b"GEOM" => {
-                    let data = ModelFileGeometryV1::ref_from_prefix(chunk.bytes())
-                        .unwrap()
-                        .0;
+                    let data = unsafe { &*(chunk.bytes().as_ptr() as *const ModelFileGeometryV1) };
                 }
                 _ => {}
             }

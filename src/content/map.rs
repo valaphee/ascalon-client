@@ -20,7 +20,7 @@ pub struct Map {
     pub _050: WcharPtr,
     pub _058: WcharPtr,
     pub _060: WcharPtr,
-    pub _068: WcharPtr,
+    pub file: WcharPtr,
     pub _070: u32,
     pub _074: u32,
     pub _078: WcharPtr,
