@@ -9,6 +9,7 @@ use crate::strings::{Strings, StringsPlugin};
 
 mod asset;
 mod content;
+mod coord;
 mod strings;
 
 fn main() {
@@ -33,10 +34,18 @@ fn setup(mut commands: Commands) {
         Camera3d::default(),
         bevy::camera_controller::free_camera::FreeCamera::default(),
     ));
+
+    commands.spawn((
+        DirectionalLight {
+            illuminance: 20_000.0,
+            ..default()
+        },
+        Transform::from_rotation(Quat::from_euler(EulerRot::XYZ, -0.8, -0.6, 0.0)),
+    ));
 }
 
 fn debug(mut commands: Commands, content: Res<Content>, asset_server: Res<AssetServer>) {
-    let map = content.get::<content::Map>(21).unwrap();
+    let map = content.get::<content::Map>(350).unwrap();
 
     commands.spawn(WorldAssetRoot(
         asset_server.load(unsafe { map.fileMap.file_id() }.unwrap().to_string()),

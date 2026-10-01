@@ -2,18 +2,10 @@ use std::io::Read as _;
 use std::sync::OnceLock;
 
 use ascalon_asset::packfile::txtm::TextPackManifest;
-use bevy::app::{App, Plugin, Update};
 use bevy::asset::io::{Reader, VecReader};
-use bevy::asset::{
-    Asset, AssetApp as _, AssetLoader, AssetServer, Assets, Handle, LoadContext,
-    VisitAssetDependencies,
-};
-use bevy::ecs::resource::Resource;
-use bevy::ecs::schedule::IntoScheduleConfigs as _;
-use bevy::ecs::schedule::common_conditions::{not, resource_exists};
-use bevy::ecs::system::{Commands, Res, SystemParam};
-use bevy::ecs::world::{FromWorld, World};
-use bevy::reflect::TypePath;
+use bevy::asset::{AssetLoader, LoadContext, VisitAssetDependencies};
+use bevy::ecs::system::SystemParam;
+use bevy::prelude::*;
 
 use crate::asset::Packfile;
 

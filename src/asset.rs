@@ -5,7 +5,7 @@ use bevy::app::{App, Plugin};
 use bevy::asset::io::{
     AssetReaderError, AssetSourceBuilder, AssetSourceId, PathStream, Reader, VecReader,
 };
-use bevy::asset::{Asset, AssetApp, AssetLoader, LoadContext};
+use bevy::asset::{Asset, AssetApp as _, AssetLoader, LoadContext};
 use bevy::reflect::TypePath;
 
 use crate::asset::image::ImageLoader;

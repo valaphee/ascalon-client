@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::fmt::Debug;
 
 use ascalon_asset::packfile::cntc::PackContent;
 use bevy::app::{App, Plugin, Update};
@@ -82,7 +81,7 @@ pub fn init_content(
     assets: Res<Assets<Packfile>>,
     handles: Res<ContentHandles>,
 ) {
-    let content: Vec<_> = handles
+    let content_all: Vec<_> = handles
         .0
         .iter()
         .map(|handle| {
@@ -95,10 +94,10 @@ pub fn init_content(
     let mut index = HashMap::new();
 
     unsafe {
-        for content_part in &content {
-            let data = content_part.content.as_ptr();
+        for content in &content_all {
+            let data = content.content.as_ptr();
 
-            for fixup in content_part.localOffsets.as_slice() {
+            for fixup in content.localOffsets.as_slice() {
                 let value = data
                     .add(fixup.relocOffset.get() as usize)
                     .cast_mut()
@@ -107,8 +106,8 @@ pub fn init_content(
                 value.write_unaligned(data as usize + offset);
             }
 
-            for fixup in content_part.externalOffsets.as_slice() {
-                let target = &content[fixup.targetFileIndex.get() as usize];
+            for fixup in content.externalOffsets.as_slice() {
+                let target = &content_all[fixup.targetFileIndex.get() as usize];
 
                 let value = data
                     .add(fixup.relocOffset.get() as usize)
@@ -118,31 +117,31 @@ pub fn init_content(
                 value.write_unaligned(target.content.as_ptr() as usize + offset);
             }
 
-            for fixup in content_part.fileIndices.as_slice() {
+            for fixup in content.fileIndices.as_slice() {
                 let value = data
                     .add(fixup.relocOffset.get() as usize)
                     .cast_mut()
                     .cast::<usize>();
                 let file_index = usize::from_le(value.read_unaligned());
-                value.write_unaligned(content[0].fileRefs.as_slice()[file_index].as_ptr() as usize);
+                value.write_unaligned(
+                    content_all[0].fileRefs.as_slice()[file_index].as_ptr() as usize
+                );
             }
 
-            for fixup in content_part.stringIndices.as_slice() {
+            for fixup in content.stringIndices.as_slice() {
                 let value = data
                     .add(fixup.relocOffset.get() as usize)
                     .cast_mut()
                     .cast::<usize>();
                 let string_index = usize::from_le(value.read_unaligned());
-                value.write_unaligned(
-                    content_part.strings.as_slice()[string_index].as_ptr() as usize
-                );
+                value.write_unaligned(content.strings.as_slice()[string_index].as_ptr() as usize);
             }
 
-            for entry in content_part.indexEntries.as_slice() {
+            for entry in content.indexEntries.as_slice() {
                 let type_id = entry.r#type.get();
-                let data = &content_part.content.as_slice()[entry.offset.get() as usize..];
+                let data = &content.content.as_slice()[entry.offset.get() as usize..];
 
-                let type_info = &content[0].typeInfos.as_slice()[type_id as usize];
+                let type_info = &content_all[0].typeInfos.as_slice()[type_id as usize];
 
                 let data_id_offset = type_info.dataIdOffset.get();
                 if data_id_offset != u32::MAX {
