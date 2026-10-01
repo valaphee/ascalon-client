@@ -1,4 +1,4 @@
-use super::{Name, Progress};
+use super::{Name, Progress, WcharPtr};
 
 #[repr(C)]
 pub struct Item {
@@ -12,7 +12,7 @@ pub struct Item {
     pub item: _Item,
     pub flags: ItemFlags,
     pub _3c: u32,
-    pub icon: *const u16,
+    pub icon: WcharPtr,
     pub _48: u32,
     pub _level: u32,
     pub _50: *const Progress,
@@ -360,7 +360,6 @@ pub enum ItemWeaponType {
 }
 
 bitflags::bitflags! {
-    #[derive(Debug)]
     #[repr(transparent)]
     pub struct ItemFlags: u32 {
         const NO_MOVE = 1 << 28;

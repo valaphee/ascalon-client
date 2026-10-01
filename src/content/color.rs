@@ -8,10 +8,10 @@ pub struct Color {
     pub content_name: *const Name,
     pub content_full_name: *const Name,
     pub data_id: u32,
-    _34: u32, // pad
+    _34: u32, // zero
     pub _30: *const [Color_30],
-    _40: u32, // pad
-    _44: u32, // pad
+    _40: u32, // zero
+    _44: u32, // zero
     pub name: u32,
 }
 

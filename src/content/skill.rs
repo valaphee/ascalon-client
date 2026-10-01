@@ -1,4 +1,4 @@
-use super::Name;
+use super::{Name, WcharPtr};
 
 #[repr(C)]
 pub struct Skill {
@@ -16,7 +16,7 @@ pub struct Skill {
     pub _40: *const (),
     pub _48: u32,
     pub _4c: u32,
-    pub icon: *const u16,
+    pub icon: WcharPtr,
     pub _58: u32,
     pub _5c: u32,
     pub _60: *const (),

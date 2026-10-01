@@ -1,4 +1,4 @@
-use super::Name;
+use super::{Name, WcharPtr};
 
 #[repr(C)]
 pub struct Skin {
@@ -9,14 +9,14 @@ pub struct Skin {
     pub content_full_name: *const Name,
     pub data_id: u32,
     pub _2c: u32,
-    pub _30: *const u16,
+    pub _30: WcharPtr, // file
     pub _38: *const (),
     pub _40: u32,
     pub _44: u32,
-    pub _48: *const u16, // file
+    pub _48: WcharPtr, // file
     pub _50: u32,
     pub _54: u32,
-    pub icon: *const u16,
+    pub icon: WcharPtr,
     pub _60: u32,
     pub _64: u32,
     pub name: u32,

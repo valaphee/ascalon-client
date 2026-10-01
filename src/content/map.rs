@@ -1,4 +1,4 @@
-use super::{Name, Progress};
+use super::{Name, Progress, WcharPtr};
 
 #[repr(C)]
 pub struct Map {
@@ -11,33 +11,33 @@ pub struct Map {
     pub r#type: MapType,
     pub _030: u32,
     pub _034: u32,
-    pub _038: *const u16, // file
-    pub _040: *const u16, // file
-    pub _048: *const u16, // file
-    pub _050: *const u16, // file
-    pub _058: *const u16, // file
-    pub _060: *const u16, // file
-    pub file: *const u16, // file
+    pub _038: WcharPtr, // file
+    pub _040: WcharPtr, // file
+    pub _048: WcharPtr, // file
+    pub _050: WcharPtr, // file
+    pub _058: WcharPtr, // file
+    pub _060: WcharPtr, // file
+    pub file: WcharPtr, // file
     pub _070: u32,
     pub _074: u32,
-    pub _078: *const u16, // file
+    pub _078: WcharPtr, // file
     pub _080: *const (),
     pub _088: u32,
     pub _08c: u32,
-    pub _090: *const u16, // file
+    pub _090: WcharPtr, // file
     pub _098: MapFlags,
     pub _09c: u32,
     pub _0a0: u32,
     pub _0a4: u32,
     pub min_level: u32,
     pub max_level: u32,
-    pub _0b0: *const u16,
+    pub _0b0: WcharPtr,
     pub _0b8: u32,
     pub _0bc: u32,
     pub _0c0: *const (), // type 0x02B
     pub _0c8: *const (), // type 0x001
     pub _0d0: *const (), // type 0x04A
-    pub _0d8: *const u16,
+    pub _0d8: WcharPtr,
     pub _0e0: u32,
     pub _0e4: u32,
     pub _0e8: u32,
@@ -47,7 +47,7 @@ pub struct Map {
     pub _0f8: *const (), // type 0x0AD
     pub pvp: *const (),
     pub _108: *const (), // type 0x03C
-    pub _110: *const u16,
+    pub _110: WcharPtr,
     pub _118: u32,
     pub _11c: u32,
     pub _120: u32,
@@ -125,7 +125,6 @@ pub enum MapType {
 }
 
 bitflags::bitflags! {
-    #[derive(Debug)]
     #[repr(transparent)]
     pub struct MapFlags: u32 {
         const INSTANCE_CHECKPOINT_OVERRIDE = 1 << 17;

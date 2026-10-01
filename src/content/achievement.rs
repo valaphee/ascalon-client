@@ -1,4 +1,4 @@
-use super::{Item, Name, Progress};
+use super::{Item, Name, Progress, WcharPtr};
 
 #[repr(C)]
 pub struct Achievement {
@@ -8,8 +8,8 @@ pub struct Achievement {
     pub content_name: *const Name,
     pub content_full_name: *const Name,
     pub data_id: u32,
-    _2c: u32, // pad
-    pub icon: *const u16,
+    _2c: u32, // zero
+    pub icon: WcharPtr,
     pub _38: u32,
     pub _3c: u32,
     pub _40: *const Achievement,
@@ -47,6 +47,5 @@ pub struct Achievement {
     pub _f8: u32,
 }
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct AchievementTier {}

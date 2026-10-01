@@ -158,15 +158,61 @@ pub fn init_content(
     commands.insert_resource(Content(index));
 }
 
-#[derive(Debug)]
+#[repr(transparent)]
+pub struct WcharPtr(*const u16);
+
+impl WcharPtr {
+    pub fn as_ptr(&self) -> *const u16 {
+        self.0
+    }
+
+    pub unsafe fn len(&self) -> usize {
+        let mut ptr = self.as_ptr();
+        if ptr.is_null() {
+            return 0;
+        }
+
+        unsafe {
+            while ptr.read_unaligned() != 0 {
+                ptr = ptr.add(1);
+            }
+
+            ptr.offset_from_unsigned(self.as_ptr())
+        }
+    }
+
+    pub unsafe fn as_slice(&self) -> &[u16] {
+        let ptr = self.as_ptr();
+        if ptr.is_null() {
+            return &[];
+        }
+
+        unsafe { std::slice::from_raw_parts(ptr, self.len()) }
+    }
+}
+
+impl WcharPtr {
+    pub unsafe fn file_id(&self) -> Option<u32> {
+        let [a, b, ..] = (unsafe { self.as_slice() }) else {
+            return None;
+        };
+
+        if *a <= 0xFF || *b <= 0xFF {
+            return None;
+        }
+
+        Some((u32::from(*a) - 0xFF) + (u32::from(*b) - 0x100) * 0xFF00)
+    }
+}
+
 #[repr(C)]
 pub struct Name {
-    pub _00: *const u16,
+    pub _00: WcharPtr,
     pub _08: u32,
-    _0c: u32, // pad
-    pub _10: *const u16,
+    _0c: u32, // zero
+    pub _10: WcharPtr,
     pub _18: u32,
-    _1c: u32, // pad
+    _1c: u32, // zero
 }
 
 pub trait ContentType {
