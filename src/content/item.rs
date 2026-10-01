@@ -2,35 +2,33 @@ use super::{Name, Progress, WcharPtr};
 
 #[repr(C)]
 pub struct Item {
-    pub content_guid: [u8; 16],
-    pub content_type: u32,
-    pub content_uid: u32,
-    pub content_name: *const Name,
-    pub content_full_name: *const Name,
-    pub data_id: u32,
+    pub contentGuid: [u8; 16],
+    pub contentType: u32,
+    pub contentUid: u32,
+    pub contentName: *const Name,
+    pub contentFullName: *const Name,
+    pub dataId: u32,
     pub r#type: ItemType,
     pub item: _Item,
     pub flags: ItemFlags,
-    pub _3c: u32,
-    pub icon: WcharPtr,
+    _3c: u32, // zero
+    pub fileIcon: WcharPtr,
     pub _48: u32,
     pub _level: u32,
     pub _50: *const Progress,
     pub _58: *const Progress,
     pub rarity: ItemRarity,
-    pub _64: u32,
+    _64: u32, // zero
     pub _68: *const (),
     pub _70: u32,
     pub level: u32,
-    pub _78: u32,
-    pub _7c: u32,
-    pub name: u32,
-    pub description: u32,
+    _78: u32, // zero
+    _7c: u32, // zero
+    pub textName: u32,
+    pub textDescription: u32,
     pub _88: u32,
-    pub _8c: u32,
-    pub _90: *const (),
-    pub _98: u32,
-    pub _9c: u32,
+    _8c: u32, // zero
+    pub _90: *const [()],
     pub _a0: u32,
 }
 
@@ -105,7 +103,7 @@ pub struct ItemArmor {
     pub _5c: u32,
     pub _60: u32,
     pub _64: u32,
-    pub weight_class: ItemArmorWeightClass,
+    pub weightClass: ItemArmorWeightClass,
 }
 
 #[repr(u32)]

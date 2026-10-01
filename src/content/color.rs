@@ -2,17 +2,17 @@ use super::Name;
 
 #[repr(C)]
 pub struct Color {
-    pub content_guid: [u8; 16],
-    pub content_type: u32,
-    pub content_uid: u32,
-    pub content_name: *const Name,
-    pub content_full_name: *const Name,
-    pub data_id: u32,
+    pub contentGuid: [u8; 16],
+    pub contentType: u32,
+    pub contentUid: u32,
+    pub contentName: *const Name,
+    pub contentFullName: *const Name,
+    pub dataId: u32,
     _34: u32, // zero
     pub _30: *const [Color_30],
     _40: u32, // zero
     _44: u32, // zero
-    pub name: u32,
+    pub textName: u32,
 }
 
 #[repr(C)]
@@ -22,12 +22,12 @@ pub struct Color_30 {
     pub hue: f32,
     pub saturation: f32,
     pub lightness: f32,
-    pub material_type: MaterialType,
+    pub materialType: MaterialType,
 }
 
 #[repr(u32)]
 pub enum MaterialType {
-    _0 = 0,
+    Default = 0,
     Cloth = 1,
     Leather = 2,
     Metal = 3,

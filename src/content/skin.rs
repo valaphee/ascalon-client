@@ -2,44 +2,35 @@ use super::{Name, WcharPtr};
 
 #[repr(C)]
 pub struct Skin {
-    pub content_guid: [u8; 16],
-    pub content_type: u32,
-    pub content_uid: u32,
-    pub content_name: *const Name,
-    pub content_full_name: *const Name,
-    pub data_id: u32,
-    pub _2c: u32,
+    pub contentGuid: [u8; 16],
+    pub contentType: u32,
+    pub contentUid: u32,
+    pub contentName: *const Name,
+    pub contentFullName: *const Name,
+    pub dataId: u32,
+    _2c: u32,          // zero
     pub _30: WcharPtr, // file
-    pub _38: *const (),
-    pub _40: u32,
-    pub _44: u32,
+    pub _38: *const [()],
     pub _48: WcharPtr, // file
     pub _50: u32,
     pub _54: u32,
-    pub icon: WcharPtr,
-    pub _60: u32,
-    pub _64: u32,
-    pub name: u32,
-    pub _6c: u32,
-    pub description: u32,
-    pub _74: u32,
+    pub fileIcon: WcharPtr,
+    _60: u32, // zero
+    _64: u32, // zero
+    pub textName: u32,
+    pub textDescription: u32,
+    pub _70: u32,       // text
+    _74: u32,           // zero
     pub _78: *const (), // type 0x17A
     pub _80: u32,
-    pub _84: u32,
+    _84: u32, // zero
     pub _88: *const (),
     pub _90: u32,
-    pub _94: u32,
+    _94: u32, // zero
     pub _98: u32,
-    pub _9c: u32,
+    _9c: u32, // zero
     pub _a0: u32,
-    pub _a4: u32,
-    pub _a8: *const (),
-    pub _b0: u32,
-    pub _b4: u32,
+    _a4: u32, // zero
+    pub _a8: *const [()],
     pub _b8: u32,
-    pub _bc: u32,
-    pub _c0: u32,
-    pub _c4: u32,
-    pub _c8: u32,
-    pub _cc: u32,
 }

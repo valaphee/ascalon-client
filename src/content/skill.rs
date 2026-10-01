@@ -2,38 +2,30 @@ use super::{Name, WcharPtr};
 
 #[repr(C)]
 pub struct Skill {
-    pub content_guid: [u8; 16],
-    pub content_type: u32,
-    pub content_uid: u32,
-    pub content_name: *const Name,
-    pub content_full_name: *const Name,
-    pub data_id: u32,
+    pub contentGuid: [u8; 16],
+    pub contentType: u32,
+    pub contentUid: u32,
+    pub contentName: *const Name,
+    pub contentFullName: *const Name,
+    pub dataId: u32,
     pub _2c: u32,
     pub _30: u32,
-    pub name: u32,
+    pub textName: u32,
     pub flags: SkillFlags,
-    pub _3c: u32,
-    pub _40: *const (),
-    pub _48: u32,
-    pub _4c: u32,
-    pub icon: WcharPtr,
+    _3c: u32, // zero
+    pub _40: *const [()],
+    pub fileIcon: WcharPtr,
     pub _58: u32,
     pub _5c: u32,
     pub _60: *const (),
-    pub _68: *const (),
-    pub _70: u32,
-    pub _74: u32,
+    pub _68: *const [()],
     pub _78: *const (), // type 0x09B
-    pub _80: u32,
-    pub _84: u32,
-    pub _88: *const (),
-    pub _90: u32,
-    pub _94: u32,
-    pub _98: u32,
-    pub _9c: u32,
-    pub _a0: *const (),
-    pub _a8: u32,
-    pub _ac: u32,
+    _80: u32,           // zero
+    _84: u32,           // zero
+    pub _88: *const [()],
+    pub _98: u32, // text
+    _9c: u32,     // zero
+    pub _a0: *const [()],
     pub _b0: *const (),
 }
 

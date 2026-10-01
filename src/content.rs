@@ -206,13 +206,12 @@ impl WcharPtr {
 }
 
 #[repr(C)]
+pub struct String(WcharPtr, u32);
+
+#[repr(C)]
 pub struct Name {
-    pub _00: WcharPtr,
-    pub _08: u32,
-    _0c: u32, // zero
-    pub _10: WcharPtr,
-    pub _18: u32,
-    _1c: u32, // zero
+    pub _00: String,
+    pub _10: String,
 }
 
 pub trait ContentType {
