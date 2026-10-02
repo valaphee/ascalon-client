@@ -34,8 +34,8 @@ impl FromWorld for StringsHandle {
 
 enum StringsChunkEntry {
     Encrypted {
-        base: u16,
-        bits: u16,
+        base:  u16,
+        bits:  u16,
         bytes: Box<[u8]>,
     },
     String(String),
@@ -103,15 +103,15 @@ impl AssetLoader for StringsChunkLoader {
 #[derive(SystemParam)]
 pub struct Strings<'w> {
     asset_server: Res<'w, AssetServer>,
-    assets: Res<'w, Assets<StringsChunk>>,
-    state: Res<'w, StringsState>,
+    assets:       Res<'w, Assets<StringsChunk>>,
+    state:        Res<'w, StringsState>,
 }
 
 #[derive(Resource)]
 struct StringsState {
     manifest: *const TextPackManifest,
     language: usize,
-    strings: Box<[OnceLock<Handle<StringsChunk>>]>,
+    strings:  Box<[OnceLock<Handle<StringsChunk>>]>,
 }
 
 unsafe impl Sync for StringsState {}
@@ -163,6 +163,6 @@ fn init_strings(mut commands: Commands, assets: Res<Assets<Packfile>>, handle: R
     commands.insert_resource(StringsState {
         manifest: manifest as *const _,
         language: 0,
-        strings: vec![OnceLock::new(); filenames.len()].into_boxed_slice(),
+        strings:  vec![OnceLock::new(); filenames.len()].into_boxed_slice(),
     });
 }

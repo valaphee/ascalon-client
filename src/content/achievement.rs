@@ -2,47 +2,47 @@ use super::{Item, Name, Progress, WcharPtr};
 
 #[repr(C)]
 pub struct Achievement {
-    pub contentGuid: [u8; 16],
-    pub contentType: u32,
-    pub contentUid: u32,
-    pub contentName: *const Name,
-    pub contentFllName: *const Name,
-    pub dataId: u32,
-    _2c: u32, // zero
-    pub fileIcon: WcharPtr,
-    pub _38: u32,
-    pub _3c: u32,
-    pub prerequisite: *const Achievement,
-    pub _48: *const Progress,
-    pub _50: *const Progress,
-    pub pointCap: u32,
-    pub _5c: u32,
-    pub rewardItem: *const Item,
-    pub textName: u32,
+    pub contentGuid:     [u8; 16],
+    pub contentType:     u32,
+    pub contentUid:      u32,
+    pub contentName:     *const Name,
+    pub contentFllName:  *const Name,
+    pub dataId:          u32,
+    _2c:                 u32,
+    pub fileIcon:        WcharPtr,
+    pub _38:             u32,
+    pub _3c:             u32,
+    pub prerequisite:    *const Achievement,
+    pub _48:             *const Progress,
+    pub _50:             *const Progress,
+    pub pointCap:        u32,
+    pub _5c:             u32,
+    pub rewardItem:      *const Item,
+    pub textName:        u32,
     pub textDescription: u32,
-    pub textCompleted: u32,
+    pub textCompleted:   u32,
     pub textRequirement: u32,
-    pub tiers: *const [AchievementTier],
-    pub _88: *const (), // type 0x49
-    pub _90: *const [()],
-    pub r#type: u32,
-    _a4: u32, // zero
-    pub _a8: *const (),
-    _b0: u32, // zero
-    _b4: u32, // zero
+    pub tiers:           *const [AchievementTier],
+    pub _88:             *const (),
+    pub _90:             *const [()],
+    pub r#type:          u32,
+    _a4:                 u32,
+    pub _a8:             *const (),
+    _b0:                 u32,
+    _b4:                 u32,
     pub rewardItemCount: u32,
-    _bc: u32, // zero
-    pub _c0: *const Item,
-    pub _c8: u32,
-    _cc: u32,           // zero
-    pub _d0: *const (), // type 0x4C
-    pub textLocked: u32,
-    _dc: u32, // zero
-    pub _e0: *const (),
-    pub _e8: u32,
-    _ec: u32, // zero
-    pub _f0: *const (),
-    pub _f8: u32,
+    _bc:                 u32,
+    pub _c0:             *const Item,
+    pub _c8:             u32,
+    _cc:                 u32,
+    pub _d0:             *const (),
+    pub textLocked:      u32,
+    _dc:                 u32,
+    pub _e0:             *const (),
+    pub _e8:             u32,
+    _ec:                 u32,
+    pub _f0:             *const (),
+    pub _f8:             u32,
 }
 
 #[repr(C)]

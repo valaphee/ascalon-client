@@ -48,6 +48,6 @@ fn debug(mut commands: Commands, content: Res<Content>, asset_server: Res<AssetS
     let map = content.get::<content::Map>(350).unwrap();
 
     commands.spawn(WorldAssetRoot(
-        asset_server.load(unsafe { map.fileMap.file_id() }.unwrap().to_string()),
+        asset_server.load(format!("{}.map", unsafe { map.fileMap.file_id() }.unwrap())),
     ));
 }

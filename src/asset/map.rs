@@ -33,27 +33,19 @@ impl AssetLoader for MapLoader {
 
         let mut world = World::new();
 
-        let material = load_context.add_labeled_asset(
-            "material",
-            StandardMaterial {
-                base_color: Color::WHITE,
-                perceptual_roughness: 1.0,
-                ..default()
-            },
-        );
-
         if let Some(prop) = packfile
             .chunks()
             .find(|chunk| &chunk.name() == b"prp2")
             .map(|chunk| unsafe { &*(chunk.bytes().as_ptr() as *const PackMapPropV21) })
         {
             for prop_obj in unsafe { prop.propArray.as_slice() } {
-                let mesh =
-                    load_context.load(unsafe { prop_obj.filename.file_id() }.unwrap().to_string());
+                let model = load_context.load(format!(
+                    "{}.model",
+                    unsafe { prop_obj.filename.file_id() }.unwrap()
+                ));
 
                 world.spawn((
-                    Mesh3d(mesh),
-                    MeshMaterial3d(material.clone()),
+                    WorldAssetRoot(model),
                     Transform::default()
                         .with_translation(
                             coord::position([
@@ -73,13 +65,14 @@ impl AssetLoader for MapLoader {
             }
 
             for prop_obj in unsafe { prop.propInstanceArray.as_slice() } {
-                let mesh =
-                    load_context.load(unsafe { prop_obj.filename.file_id() }.unwrap().to_string());
+                let model = load_context.load(format!(
+                    "{}.model",
+                    unsafe { prop_obj.filename.file_id() }.unwrap()
+                ));
 
                 for transform in unsafe { prop_obj.transforms.as_slice() } {
                     world.spawn((
-                        Mesh3d(mesh.clone()),
-                        MeshMaterial3d(material.clone()),
+                        WorldAssetRoot(model.clone()),
                         Transform::default()
                             .with_translation(
                                 coord::position([
@@ -101,5 +94,9 @@ impl AssetLoader for MapLoader {
         }
 
         return Ok(WorldAsset::new(world));
+    }
+
+    fn extensions(&self) -> &[&str] {
+        &["map"]
     }
 }
