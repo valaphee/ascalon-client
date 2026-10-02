@@ -15,9 +15,9 @@ zerocopy = "0.8"
 
 bevy = { git = "https://github.com/bevyengine/bevy.git", rev = "1a6377e33b26b6d744f96e35dbe9392e86602ac3", features = ["2d", "3d", "ui", "free_camera"] }
 
-ascalon-asset = { git = "https://github.com/valaphee/ascalon.git", rev = "2d5c7c528a51bf25e6d965b1f47d7602db1ee473" }
-ascalon-network = { git = "https://github.com/valaphee/ascalon.git", rev = "2d5c7c528a51bf25e6d965b1f47d7602db1ee473" }
-ascalon-protocol = { git = "https://github.com/valaphee/ascalon.git", rev = "2d5c7c528a51bf25e6d965b1f47d7602db1ee473" }
+ascalon-asset = { git = "https://github.com/valaphee/ascalon.git", rev = "bcb01542d32c569484e7f2a621cab99b7ff296c3" }
+ascalon-network = { git = "https://github.com/valaphee/ascalon.git", rev = "bcb01542d32c569484e7f2a621cab99b7ff296c3" }
+ascalon-protocol = { git = "https://github.com/valaphee/ascalon.git", rev = "bcb01542d32c569484e7f2a621cab99b7ff296c3" }
 
 [profile.dev]
 opt-level = 1
