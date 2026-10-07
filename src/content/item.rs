@@ -1,7 +1,7 @@
-use super::{Name, Progress, WcharPtr};
+use super::{Name, ProgressDef, WcharPtr};
 
 #[repr(C)]
-pub struct Item {
+pub struct ItemDef {
     pub contentGuid:     [u8; 16],
     pub contentType:     u32,
     pub contentUid:      u32,
@@ -15,8 +15,8 @@ pub struct Item {
     pub fileIcon:        WcharPtr,
     pub _48:             u32,
     pub _level:          u32,
-    pub _50:             *const Progress,
-    pub _58:             *const Progress,
+    pub _50:             *const ProgressDef,
+    pub _58:             *const ProgressDef,
     pub rarity:          ItemRarity,
     _64:                 u32,
     pub _68:             *const (),

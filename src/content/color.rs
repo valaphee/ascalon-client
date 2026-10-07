@@ -1,7 +1,7 @@
 use super::Name;
 
 #[repr(C)]
-pub struct Color {
+pub struct ColorDef {
     pub contentGuid:     [u8; 16],
     pub contentType:     u32,
     pub contentUid:      u32,

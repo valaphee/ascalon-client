@@ -1,13 +1,8 @@
 use std::collections::HashMap;
 
 use ascalon_asset::packfile::cntc::PackContent;
-use bevy::app::{App, Plugin, Update};
-use bevy::asset::{AssetServer, Assets, Handle, VisitAssetDependencies};
-use bevy::ecs::resource::Resource;
-use bevy::ecs::schedule::IntoScheduleConfigs as _;
-use bevy::ecs::schedule::common_conditions::{not, resource_exists};
-use bevy::ecs::system::{Commands, Res};
-use bevy::ecs::world::{FromWorld, World};
+use bevy::asset::VisitAssetDependencies;
+use bevy::prelude::*;
 
 use crate::asset::Packfile;
 
@@ -17,7 +12,7 @@ impl Plugin for ContentPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<ContentHandles>().add_systems(
             Update,
-            init_content
+            load_content
                 .run_if(content_handles_loaded)
                 .run_if(not(resource_exists::<Content>)),
         );
@@ -76,7 +71,7 @@ impl Content {
     }
 }
 
-pub fn init_content(
+pub fn load_content(
     mut commands: Commands,
     assets: Res<Assets<Packfile>>,
     handles: Res<ContentHandles>,
@@ -220,55 +215,55 @@ pub trait ContentType {
 mod achievement;
 pub use achievement::*;
 
-impl ContentType for Achievement {
+impl ContentType for AchievementDef {
     const TYPE_ID: u32 = 0x00;
 }
 
 mod color;
 pub use color::*;
 
-impl ContentType for Color {
+impl ContentType for ColorDef {
     const TYPE_ID: u32 = 0x09;
 }
 
 mod crafting_recipe;
 pub use crafting_recipe::*;
 
-impl ContentType for CraftingRecipe {
+impl ContentType for CraftingRecipeDef {
     const TYPE_ID: u32 = 0x0C;
 }
 
 mod item;
 pub use item::*;
 
-impl ContentType for Item {
+impl ContentType for ItemDef {
     const TYPE_ID: u32 = 0x23;
 }
 
 mod map;
 pub use map::*;
 
-impl ContentType for Map {
+impl ContentType for MapDef {
     const TYPE_ID: u32 = 0x2D;
 }
 
 mod progress;
 pub use progress::*;
 
-impl ContentType for Progress {
+impl ContentType for ProgressDef {
     const TYPE_ID: u32 = 0x35;
 }
 
 mod skill;
 pub use skill::*;
 
-impl ContentType for Skill {
+impl ContentType for SkillDef {
     const TYPE_ID: u32 = 0x40;
 }
 
 mod skin;
 pub use skin::*;
 
-impl ContentType for Skin {
+impl ContentType for SkinDef {
     const TYPE_ID: u32 = 0x42;
 }

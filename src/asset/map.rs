@@ -40,7 +40,7 @@ impl AssetLoader for MapLoader {
         {
             for prop_obj in unsafe { prop.propArray.as_slice() } {
                 let model = load_context.load(format!(
-                    "{}.model",
+                    "{}.amdl2",
                     unsafe { prop_obj.filename.file_id() }.unwrap()
                 ));
 
@@ -66,7 +66,7 @@ impl AssetLoader for MapLoader {
 
             for prop_obj in unsafe { prop.propInstanceArray.as_slice() } {
                 let model = load_context.load(format!(
-                    "{}.model",
+                    "{}.amdl2",
                     unsafe { prop_obj.filename.file_id() }.unwrap()
                 ));
 
@@ -97,6 +97,6 @@ impl AssetLoader for MapLoader {
     }
 
     fn extensions(&self) -> &[&str] {
-        &["map"]
+        &["amap2c"]
     }
 }

@@ -1,7 +1,7 @@
-use super::{Name, Progress, String, WcharPtr};
+use super::{Name, ProgressDef, String, WcharPtr};
 
 #[repr(C)]
-pub struct Map {
+pub struct MapDef {
     pub contentGuid:     [u8; 16],
     pub contentType:     u32,
     pub contentUid:      u32,
@@ -75,12 +75,12 @@ pub struct Map {
     _1c8:                u32,
     _1cc:                u32,
     pub _1d0:            *const (),
-    pub _1d8:            *const Progress,
+    pub _1d8:            *const ProgressDef,
     _1e0:                u32,
     _1e4:                u32,
     _1e8:                u32,
     _1ec:                u32,
-    pub _1f0:            *const Progress,
+    pub _1f0:            *const ProgressDef,
     pub _1f8:            *const (),
     pub _200:            *const [()],
     pub _210:            *const [()],

@@ -1,7 +1,7 @@
 use super::{Name, WcharPtr};
 
 #[repr(C)]
-pub struct Skin {
+pub struct SkinDef {
     pub contentGuid:     [u8; 16],
     pub contentType:     u32,
     pub contentUid:      u32,

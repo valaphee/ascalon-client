@@ -118,4 +118,8 @@ impl AssetLoader for ImageLoader {
 
         Ok(image)
     }
+
+    fn extensions(&self) -> &[&str] {
+        &["atex"]
+    }
 }

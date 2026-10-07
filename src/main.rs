@@ -5,12 +5,12 @@ use bevy::prelude::*;
 
 use crate::asset::{AssetLoaderPlugin, AssetSourcePlugin};
 use crate::content::{Content, ContentPlugin};
-use crate::strings::{Strings, StringsPlugin};
+use crate::text::TextPlugin;
 
 mod asset;
 mod content;
 mod coord;
-mod strings;
+mod text;
 
 fn main() {
     let mut app = App::new();
@@ -20,7 +20,7 @@ fn main() {
         DefaultPlugins,
         AssetLoaderPlugin,
         ContentPlugin,
-        StringsPlugin,
+        TextPlugin,
         bevy::camera_controller::free_camera::FreeCameraPlugin,
     ))
     .add_systems(Startup, setup)
@@ -45,9 +45,24 @@ fn setup(mut commands: Commands) {
 }
 
 fn debug(mut commands: Commands, content: Res<Content>, asset_server: Res<AssetServer>) {
-    let map = content.get::<content::Map>(350).unwrap();
+    let map = content.get::<content::MapDef>(350).unwrap();
 
-    commands.spawn(WorldAssetRoot(
-        asset_server.load(format!("{}.map", unsafe { map.fileMap.file_id() }.unwrap())),
-    ));
+    commands
+        .spawn(Node {
+            position_type: PositionType::Absolute,
+            top: Val::Px(0.0),
+            left: Val::Px(0.0),
+            flex_direction: FlexDirection::Column,
+            ..default()
+        })
+        .with_children(|parent| {
+            parent.spawn((text::Text::new(map.textName), Text::default()));
+
+            parent.spawn((text::Text::new(map.textDescription), Text::default()));
+        });
+
+    commands.spawn(WorldAssetRoot(asset_server.load(format!(
+        "{}.amap2c",
+        unsafe { map.fileMap.file_id() }.unwrap()
+    ))));
 }

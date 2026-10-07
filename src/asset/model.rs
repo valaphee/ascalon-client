@@ -63,7 +63,7 @@ impl AssetLoader for ModelLoader {
     }
 
     fn extensions(&self) -> &[&str] {
-        &["model"]
+        &["amdl2"]
     }
 }
 
