@@ -9,8 +9,8 @@ use crate::text::TextPlugin;
 
 mod asset;
 mod content;
-mod coord;
 mod text;
+mod unit;
 
 fn main() {
     let mut app = App::new();
@@ -33,14 +33,6 @@ fn setup(mut commands: Commands) {
     commands.spawn((
         Camera3d::default(),
         bevy::camera_controller::free_camera::FreeCamera::default(),
-    ));
-
-    commands.spawn((
-        DirectionalLight {
-            illuminance: 20_000.0,
-            ..default()
-        },
-        Transform::from_rotation(Quat::from_euler(EulerRot::XYZ, -0.8, -0.6, 0.0)),
     ));
 }
 

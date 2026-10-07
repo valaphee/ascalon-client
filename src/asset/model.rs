@@ -8,7 +8,7 @@ use bevy::mesh::{Indices, VertexAttributeValues};
 use bevy::prelude::*;
 use bitflags::bitflags;
 
-use crate::coord;
+use crate::unit;
 
 #[derive(Default, TypePath)]
 pub struct ModelLoader;
@@ -97,7 +97,7 @@ fn load_mesh(mesh: &ModelMeshDataV66) -> std::io::Result<Mesh> {
     let mut data = unsafe { mesh_geometry.verts.mesh.vertices.as_slice() };
     for _ in 0..vertex_count {
         if fvf.contains(Fvf::POSITION) {
-            positions.push(coord::position([
+            positions.push(unit::position([
                 data.read_le::<f32>()?,
                 data.read_le::<f32>()?,
                 data.read_le::<f32>()?,
@@ -105,7 +105,7 @@ fn load_mesh(mesh: &ModelMeshDataV66) -> std::io::Result<Mesh> {
         }
 
         if fvf.contains(Fvf::NORMAL) {
-            normals.as_mut().unwrap().push(coord::direction([
+            normals.as_mut().unwrap().push(unit::direction([
                 data.read_le::<f32>()?,
                 data.read_le::<f32>()?,
                 data.read_le::<f32>()?,
@@ -172,7 +172,7 @@ fn load_mesh(mesh: &ModelMeshDataV66) -> std::io::Result<Mesh> {
         }
 
         if fvf.contains(Fvf::POSITION_F16) {
-            positions.push(coord::position([
+            positions.push(unit::position([
                 f16::from_bits(data.read_le::<u16>()?) as f32,
                 f16::from_bits(data.read_le::<u16>()?) as f32,
                 f16::from_bits(data.read_le::<u16>()?) as f32,
