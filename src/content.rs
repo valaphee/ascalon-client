@@ -233,6 +233,13 @@ impl ContentType for CraftingRecipeDef {
     const TYPE_ID: u32 = 0x0C;
 }
 
+mod currency;
+pub use currency::*;
+
+impl ContentType for CurrencyDef {
+    const TYPE_ID: u32 = 0x0E;
+}
+
 mod item;
 pub use item::*;
 
