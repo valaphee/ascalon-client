@@ -23,11 +23,10 @@ impl AssetLoader for ImageLoader {
     ) -> Result<Self::Asset, Self::Error> {
         let reader = unsafe { &mut *(reader as *mut dyn Reader as *mut VecReader) };
         let bytes = std::mem::take(&mut reader.bytes);
-
         let mut bytes = bytes.as_slice();
-        let magic = bytes.read_array::<4>()?;
+
         if !matches!(
-            &magic,
+            &bytes.read_array::<4>()?,
             b"ATEX" | b"ATTX" | b"ATEC" | b"ATEP" | b"ATET" | b"ATEU"
         ) {
             return Err(std::io::Error::new(
@@ -36,8 +35,7 @@ impl AssetLoader for ImageLoader {
             ));
         }
 
-        let format = bytes.read_array::<4>()?;
-        let (format, _format) = match &format {
+        let (format, _format) = match &bytes.read_array::<4>()? {
             b"DXT1" => (
                 TextureFormat::Bc1RgbaUnorm,
                 Fmt::COLOR | Fmt::ALPHA | Fmt::ALPHA_DEDUCED,
@@ -51,6 +49,7 @@ impl AssetLoader for ImageLoader {
                 Fmt::COLOR | Fmt::ALPHA | Fmt::PLAIN,
             ),
             b"DXTA" => (TextureFormat::Bc4RUnorm, Fmt::ALPHA | Fmt::PLAIN),
+            b"DXTL" => (TextureFormat::Bc3RgbaUnorm, Fmt::COLOR),
             b"DXTN" | b"3DCX" | b"BC5X" => (TextureFormat::Bc5RgUnorm, Fmt::BICOLOR),
             b"BC7X" => (
                 TextureFormat::Bc7RgbaUnorm,

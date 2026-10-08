@@ -1,5 +1,7 @@
 use ascalon_asset::packfile::Packfile;
-use ascalon_asset::packfile::mapc::{MapParam, PackMapLights, PackMapPropV21, PackMapTerrainV15};
+use ascalon_asset::packfile::mapc::{
+    MapParam, PackMapEnvironmentV78, PackMapLights, PackMapPropV21, PackMapTerrainV15,
+};
 use bevy::asset::io::{Reader, VecReader};
 use bevy::asset::{AssetLoader, LoadContext, RenderAssetUsages};
 use bevy::mesh::{Indices, PrimitiveTopology};
@@ -34,6 +36,8 @@ impl AssetLoader for MapLoader {
 
         let mut world = World::new();
 
+        load_environment(load_context, &packfile, &mut world);
+
         load_terrain(load_context, &packfile, &mut world);
 
         load_props(load_context, &packfile, &mut world);
@@ -46,6 +50,16 @@ impl AssetLoader for MapLoader {
     fn extensions(&self) -> &[&str] {
         &["amap2c"]
     }
+}
+
+fn load_environment(load_context: &mut LoadContext<'_>, packfile: &Packfile, world: &mut World) {
+    let Some(environment) = packfile
+        .chunks()
+        .find(|chunk| chunk.name() == *b"env\0")
+        .map(|chunk| unsafe { &*(chunk.bytes().as_ptr() as *const PackMapEnvironmentV78) })
+    else {
+        return;
+    };
 }
 
 fn load_terrain(load_context: &mut LoadContext<'_>, packfile: &Packfile, world: &mut World) {
@@ -290,6 +304,7 @@ fn load_lights(_load_context: &mut LoadContext<'_>, packfile: &Packfile, world: 
             world.spawn((
                 PointLight {
                     color: Color::srgb_u8(light.color[2], light.color[1], light.color[0]),
+                    /*intensity: light.intensity.get(),*/
                     range: light.farDistance.get() * unit::INCH_TO_M,
                     ..default()
                 },
@@ -307,6 +322,7 @@ fn load_lights(_load_context: &mut LoadContext<'_>, packfile: &Packfile, world: 
             world.spawn((
                 SpotLight {
                     color: Color::srgb_u8(light.color[2], light.color[1], light.color[0]),
+                    /*intensity: light.intensity.get(),*/
                     range: light.farDistance.get() * unit::INCH_TO_M,
                     outer_angle: light.outerAngle.get(),
                     inner_angle: light.innerAngle.get(),

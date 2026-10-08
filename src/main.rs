@@ -5,10 +5,12 @@ use bevy::prelude::*;
 
 use crate::asset::{AssetLoaderPlugin, AssetSourcePlugin};
 use crate::content::{Content, ContentPlugin};
+use crate::render::RenderPlugin;
 use crate::text::TextPlugin;
 
 mod asset;
 mod content;
+mod render;
 mod text;
 mod unit;
 
@@ -21,6 +23,7 @@ fn main() {
         AssetLoaderPlugin,
         ContentPlugin,
         TextPlugin,
+        RenderPlugin,
         bevy::camera_controller::free_camera::FreeCameraPlugin,
     ))
     .add_systems(Startup, setup)
