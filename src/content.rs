@@ -59,6 +59,7 @@ pub struct ContentContext {
     by_type:    HashMap<u32, Vec<*const u8>>,
     by_guid:    HashMap<Guid, *const u8>,
     by_data_id: HashMap<u32, *const u8>,
+    by_name:    HashMap<u64, *const u8>,
 }
 
 unsafe impl Sync for ContentContext {}
@@ -81,6 +82,15 @@ impl ContentContext {
 
     pub fn by_data_id<T: ContentType>(&self, data_id: u32) -> Option<&T> {
         let ptr = *self.by_data_id.get(&(T::ID << 22 | data_id))?;
+        unsafe { (ptr as *const T).as_ref() }
+    }
+
+    pub fn by_name<T: ContentType>(&self, name: &str) -> Option<&T> {
+        let (namespace, name) = name.rsplit_once('.')?;
+
+        let ptr = *self
+            .by_name
+            .get(&(mangle_name(namespace) << 30 | mangle_name(name)))?;
         unsafe { (ptr as *const T).as_ref() }
     }
 }
@@ -174,6 +184,28 @@ pub fn load_content(
                         .by_data_id
                         .insert(type_id << 22 | data_id & 0x3FFFFF, data.as_ptr());
                 }
+
+                let name_offset = type_info.nameOffset.get();
+                if name_offset != u32::MAX {
+                    let name = std::ptr::read_unaligned(
+                        data[name_offset as usize..].as_ptr().cast::<Ptr<Name>>(),
+                    );
+
+                    let mut value = 0u64;
+                    for word in name.as_ref().unwrap().0.0.as_slice().iter() {
+                        value = (value << 6)
+                            | u64::from(match word.get() as u8 {
+                                word @ b'A'..=b'Z' => word - b'A',
+                                word @ b'a'..=b'z' => word - b'a' + 26,
+                                word @ b'0'..=b'9' => word - b'0' + 52,
+                                b'+' => 62,
+                                b'/' => 63,
+                                _ => continue,
+                            });
+                    }
+
+                    context.by_name.insert(value, data.as_ptr());
+                }
             }
         }
     }
@@ -181,7 +213,7 @@ pub fn load_content(
     commands.insert_resource(context);
 }
 
-pub use ascalon_asset::packfile::{Guid, WcharPtr};
+pub use ascalon_asset::packfile::{Guid, Token32, Token64, WcharPtr};
 
 #[repr(transparent)]
 pub struct Ptr<T: ?Sized>(*const T);
@@ -220,9 +252,7 @@ impl std::fmt::Debug for Name {
     }
 }
 
-fn mangle_name(name: &str) -> [u8; 5] {
-    const BASE64: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-
+fn mangle_name(name: &str) -> u64 {
     let mut digest = Sha256::new();
     for word in name.encode_utf16() {
         digest.update(word.to_le_bytes());
@@ -238,8 +268,7 @@ fn mangle_name(name: &str) -> [u8; 5] {
         }
     }
 
-    let hash = hash.swap_bytes();
-    std::array::from_fn(|i| BASE64[((hash >> (58 - i * 6)) & 63) as usize])
+    hash.swap_bytes() >> 34
 }
 
 pub trait ContentType {
@@ -274,11 +303,25 @@ impl ContentType for Currency {
     const ID: u32 = 14;
 }
 
+mod emote;
+pub use emote::*;
+
+impl ContentType for Emote {
+    const ID: u32 = 19;
+}
+
 mod item;
 pub use item::*;
 
 impl ContentType for Item {
     const ID: u32 = 35;
+}
+
+mod mail;
+pub use mail::*;
+
+impl ContentType for Mail {
+    const ID: u32 = 43;
 }
 
 mod map;
@@ -295,6 +338,13 @@ impl ContentType for Progress {
     const ID: u32 = 53;
 }
 
+mod sector;
+pub use sector::*;
+
+impl ContentType for Sector {
+    const ID: u32 = 63;
+}
+
 mod skill;
 pub use skill::*;
 
@@ -309,6 +359,13 @@ impl ContentType for Skin {
     const ID: u32 = 66;
 }
 
+mod r#trait;
+pub use r#trait::*;
+
+impl ContentType for Trait {
+    const ID: u32 = 77;
+}
+
 mod configuration;
 pub use configuration::*;
 
@@ -316,11 +373,39 @@ impl ContentType for Configuration {
     const ID: u32 = 150;
 }
 
+mod effect;
+pub use effect::*;
+
+impl ContentType for Effect {
+    const ID: u32 = 183;
+}
+
+mod marker;
+pub use marker::*;
+
+impl ContentType for Marker {
+    const ID: u32 = 293;
+}
+
+mod table;
+pub use table::*;
+
+impl ContentType for Table {
+    const ID: u32 = 394;
+}
+
+mod team;
+pub use team::*;
+
+impl ContentType for Team {
+    const ID: u32 = 401;
+}
+
 #[rustfmt::skip]
 #[derive(Debug)]
 #[repr(C, u32)]
 pub enum Content {
-    Achievement(*const Achievement)       = 0,
+    Achievement(Ptr<Achievement>)         = 0,
     _1                                    = 1,
     _2                                    = 2,
     _3                                    = 3,
@@ -329,17 +414,17 @@ pub enum Content {
     _6                                    = 6,
     _7                                    = 7,
     _8                                    = 8,
-    Color(*const Color)                   = 9,
+    Color(Ptr<Color>)                     = 9,
     _10                                   = 10,
     _11                                   = 11,
-    CraftingRecipe(*const CraftingRecipe) = 12,
+    CraftingRecipe(Ptr<CraftingRecipe>)   = 12,
     _13                                   = 13,
-    Currency(*const Currency)             = 14,
+    Currency(Ptr<Currency>)               = 14,
     _15                                   = 15,
     _16                                   = 16,
     _17                                   = 17,
     _18                                   = 18,
-    _19                                   = 19,
+    Emote(Ptr<Emote>)                     = 19,
     _20                                   = 20,
     _21                                   = 21,
     _22                                   = 22,
@@ -347,7 +432,7 @@ pub enum Content {
     _24                                   = 24,
     _25                                   = 25,
     _26                                   = 26,
-    _27                                   = 27,
+    GuildUpgrade                          = 27,
     _28                                   = 28,
     _29                                   = 29,
     _30                                   = 30,
@@ -355,7 +440,7 @@ pub enum Content {
     _32                                   = 32,
     _33                                   = 33,
     _34                                   = 34,
-    Item(*const Item)                     = 35,
+    Item(Ptr<Item>)                       = 35,
     _36                                   = 36,
     _37                                   = 37,
     _38                                   = 38,
@@ -363,9 +448,9 @@ pub enum Content {
     _40                                   = 40,
     _41                                   = 41,
     _42                                   = 42,
-    _43                                   = 43,
+    Mail(Ptr<Mail>)                       = 43,
     _44                                   = 44,
-    Map(*const Map)                       = 45,
+    Map(Ptr<Map>)                         = 45,
     _46                                   = 46,
     _47                                   = 47,
     _48                                   = 48,
@@ -373,7 +458,7 @@ pub enum Content {
     _50                                   = 50,
     _51                                   = 51,
     _52                                   = 52,
-    Progress(*const Progress)             = 53,
+    Progress(Ptr<Progress>)               = 53,
     _54                                   = 54,
     _55                                   = 55,
     _56                                   = 56,
@@ -383,10 +468,10 @@ pub enum Content {
     _60                                   = 60,
     _61                                   = 61,
     _62                                   = 62,
-    _63                                   = 63,
-    Skill(*const Skill)                   = 64,
+    Sector(Ptr<Sector>)                   = 63,
+    Skill(Ptr<Skill>)                     = 64,
     _65                                   = 65,
-    Skin(*const Skin)                     = 66,
+    Skin(Ptr<Skin>)                       = 66,
     _67                                   = 67,
     _68                                   = 68,
     _69                                   = 69,
@@ -397,7 +482,7 @@ pub enum Content {
     _74                                   = 74,
     _75                                   = 75,
     _76                                   = 76,
-    _77                                   = 77,
+    Trait(Ptr<Trait>)                     = 77,
     _78                                   = 78,
     _79                                   = 79,
     _80                                   = 80,
@@ -420,8 +505,8 @@ pub enum Content {
     _97                                   = 97,
     _98                                   = 98,
     _99                                   = 99,
-    _100                                  = 100,
-    _101                                  = 101,
+    AnimationListener                     = 100,
+    AnimationBlendTree                    = 101,
     _102                                  = 102,
     _103                                  = 103,
     _104                                  = 104,
@@ -470,7 +555,7 @@ pub enum Content {
     _147                                  = 147,
     _148                                  = 148,
     _149                                  = 149,
-    Configuration(*const Configuration)   = 150,
+    Configuration(Ptr<Configuration>)     = 150,
     _151                                  = 151,
     _152                                  = 152,
     _153                                  = 153,
@@ -500,10 +585,10 @@ pub enum Content {
     _177                                  = 177,
     _178                                  = 178,
     _179                                  = 179,
-    _180                                  = 180,
-    _181                                  = 181,
+    DynamicCamera                         = 180,
+    DynamicCameraTransition               = 181,
     _182                                  = 182,
-    _183                                  = 183,
+    Effect(Ptr<Effect>)                   = 183,
     _184                                  = 184,
     _185                                  = 185,
     _186                                  = 186,
@@ -557,9 +642,9 @@ pub enum Content {
     _234                                  = 234,
     _235                                  = 235,
     _236                                  = 236,
-    _237                                  = 237,
-    _238                                  = 238,
-    _239                                  = 239,
+    ItemConversionArray                   = 237,
+    ItemCrest                             = 238,
+    ItemDefault                           = 239,
     _240                                  = 240,
     _241                                  = 241,
     _242                                  = 242,
@@ -613,7 +698,7 @@ pub enum Content {
     _290                                  = 290,
     _291                                  = 291,
     _292                                  = 292,
-    _293                                  = 293,
+    Marker(Ptr<Marker>)                   = 293,
     _294                                  = 294,
     _295                                  = 295,
     _296                                  = 296,
@@ -623,9 +708,9 @@ pub enum Content {
     _300                                  = 300,
     _301                                  = 301,
     _302                                  = 302,
-    _303                                  = 303,
+    MovementModifier                      = 303,
     _304                                  = 304,
-    _305                                  = 305,
+    MovementSettings                      = 305,
     _306                                  = 306,
     _307                                  = 307,
     _308                                  = 308,
@@ -669,7 +754,7 @@ pub enum Content {
     _346                                  = 346,
     _347                                  = 347,
     _348                                  = 348,
-    _349                                  = 349,
+    RandomUnlockTable                     = 349,
     _350                                  = 350,
     _351                                  = 351,
     _352                                  = 352,
@@ -714,16 +799,16 @@ pub enum Content {
     _391                                  = 391,
     _392                                  = 392,
     _393                                  = 393,
-    _394                                  = 394,
+    Table(Ptr<Table>)                     = 394,
     _395                                  = 395,
     _396                                  = 396,
     _397                                  = 397,
     _398                                  = 398,
     _399                                  = 399,
     _400                                  = 400,
-    _401                                  = 401,
-    _402                                  = 402,
-    _403                                  = 403,
+    Team(Ptr<Team>)                       = 401,
+    TerrainEffectTable                    = 402,
+    TerrainDecalTable                     = 403,
     _404                                  = 404,
     _405                                  = 405,
     _406                                  = 406,
@@ -751,56 +836,21 @@ pub enum Content {
     _428                                  = 428,
     _429                                  = 429,
     _430                                  = 430,
-    _431                                  = 431,
-    _432                                  = 432,
-    _433                                  = 433,
+    Boolean(bool)                         = 431,
+    Enum(u32)                             = 432,
+    Flags(u32)                            = 433,
     Integer(u32)                          = 434,
-    _435                                  = 435,
-    _436                                  = 436,
+    IntegerPair(u32, u32)                 = 435,
+    IntegerRange(u32, u32)                = 436,
     Number(f32)                           = 437,
-    _438                                  = 438,
-    _439                                  = 439,
-    _440                                  = 440,
-    _441                                  = 441,
-    _442                                  = 442,
-    _443                                  = 443,
-    _444                                  = 444,
-    _445                                  = 445,
-    _446                                  = 446,
-    _447                                  = 447,
-    _448                                  = 448,
-    _449                                  = 449,
-    _450                                  = 450,
-    _451                                  = 451,
-    _452                                  = 452,
-    _453                                  = 453,
-    _454                                  = 454,
-    _455                                  = 455,
-    _456                                  = 456,
-    _457                                  = 457,
-    _458                                  = 458,
-    _459                                  = 459,
-    _460                                  = 460,
-    _461                                  = 461,
-    _462                                  = 462,
-    _463                                  = 463,
-    _464                                  = 464,
-    _465                                  = 465,
-    _466                                  = 466,
-    _467                                  = 467,
-    _468                                  = 468,
-    _469                                  = 469,
-    _470                                  = 470,
-    _471                                  = 471,
-    _472                                  = 472,
-    _473                                  = 473,
-    _474                                  = 474,
-    _475                                  = 475,
-    _476                                  = 476,
-    _477                                  = 477,
-    _478                                  = 478,
-    _479                                  = 479,
-    _480                                  = 480,
-    _481                                  = 481,
-    _482                                  = 482,
+    NumberPair(f32, f32)                  = 438,
+    NumberRange(f32, f32)                 = 439,
+    Point3d(f32, f32, f32)                = 440,
+    String(WcharPtr)                      = 441,
+    Text                                  = 442,
+    TextCoded                             = 443,
+    Time                                  = 444,
+    TimeOfDay                             = 445,
+    Token32(Token32)                      = 446,
+    Token64(Token64)                      = 447,
 }
