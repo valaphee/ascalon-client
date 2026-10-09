@@ -1,12 +1,13 @@
-use super::{Guid, Item, Name, Progress, WcharPtr};
+use super::{Guid, Item, Name, Progress, Ptr, WcharPtr};
 
+#[derive(Debug)]
 #[repr(C)]
 pub struct Achievement {
     pub contentGuid:     Guid,
     pub contentType:     u32,
     pub contentUid:      u32,
-    pub contentName:     *const Name,
-    pub contentFllName:  *const Name,
+    pub contentName:     Ptr<Name>,
+    pub contentFullName: Ptr<Name>,
     pub dataId:          u32,
     _2c:                 u32,
     pub fileIcon:        WcharPtr,
@@ -22,7 +23,7 @@ pub struct Achievement {
     pub textDescription: u32,
     pub textCompleted:   u32,
     pub textRequirement: u32,
-    pub tiers:           *const [AchievementTier],
+    pub tiers:           *const [()],
     pub _88:             *const (),
     pub _90:             *const [()],
     pub r#type:          u32,
@@ -43,7 +44,5 @@ pub struct Achievement {
     _ec:                 u32,
     pub _f0:             *const (),
     pub _f8:             u32,
+    _fc:                 u32,
 }
-
-#[repr(C)]
-pub struct AchievementTier {}

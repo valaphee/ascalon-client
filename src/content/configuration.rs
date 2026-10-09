@@ -1,15 +1,13 @@
-use super::{Guid, Name};
+use super::{Content, Guid, Name, Ptr};
 
+#[derive(Debug)]
 #[repr(C)]
 pub struct Configuration {
     pub contentGuid:     Guid,
     pub contentType:     u32,
     pub contentUid:      u32,
-    pub contentName:     *const Name,
-    pub contentFullName: *const Name,
+    pub contentName:     Ptr<Name>,
+    pub contentFullName: Ptr<Name>,
     pub r#type:          u32,
-    pub _2c:             u32,
-    pub _type:           u32,
-    pub _34:             u32,
-    pub value:           u32,
+    pub value:           Content,
 }

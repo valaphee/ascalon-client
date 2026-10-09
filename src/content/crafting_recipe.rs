@@ -1,12 +1,13 @@
-use super::{Guid, Item, Name, Progress};
+use super::{Guid, Item, Name, Progress, Ptr};
 
+#[derive(Debug)]
 #[repr(C)]
 pub struct CraftingRecipe {
     pub contentGuid:      Guid,
     pub contentType:      u32,
     pub contentUid:       u32,
-    pub contentName:      *const Name,
-    pub contentFullName:  *const Name,
+    pub contentName:      Ptr<Name>,
+    pub contentFullName:  Ptr<Name>,
     pub dataId:           u32,
     pub _2c:              u32,
     pub ingredients:      *const [()],

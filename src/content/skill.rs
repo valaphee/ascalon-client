@@ -1,12 +1,13 @@
-use super::{Guid, Name, WcharPtr};
+use super::{Guid, Name, Ptr, WcharPtr};
 
+#[derive(Debug)]
 #[repr(C)]
 pub struct Skill {
     pub contentGuid:     Guid,
     pub contentType:     u32,
     pub contentUid:      u32,
-    pub contentName:     *const Name,
-    pub contentFullName: *const Name,
+    pub contentName:     Ptr<Name>,
+    pub contentFullName: Ptr<Name>,
     pub dataId:          u32,
     pub _2c:             u32,
     pub _30:             u32,
@@ -30,6 +31,7 @@ pub struct Skill {
 }
 
 bitflags::bitflags! {
+    #[derive(Debug)]
     #[repr(transparent)]
     pub struct SkillFlags: u32 {
         const GROUND_TARGETED = 1 << 12;

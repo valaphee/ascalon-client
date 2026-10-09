@@ -4,7 +4,7 @@
 use bevy::prelude::*;
 
 use crate::asset::{AssetLoaderPlugin, AssetSourcePlugin};
-use crate::content::{Content, ContentPlugin};
+use crate::content::{ContentContext, ContentPlugin};
 use crate::render::RenderPlugin;
 use crate::text::TextPlugin;
 
@@ -27,7 +27,7 @@ fn main() {
         bevy::camera_controller::free_camera::FreeCameraPlugin,
     ))
     .add_systems(Startup, setup)
-    .add_systems(Update, debug.run_if(resource_added::<Content>));
+    .add_systems(Update, debug.run_if(resource_added::<ContentContext>));
 
     app.run();
 }
@@ -39,8 +39,12 @@ fn setup(mut commands: Commands) {
     ));
 }
 
-fn debug(mut commands: Commands, content: Res<Content>, asset_server: Res<AssetServer>) {
-    let map = content.by_data_id::<content::Map>(22).unwrap();
+fn debug(
+    mut commands: Commands,
+    content_context: Res<ContentContext>,
+    asset_server: Res<AssetServer>,
+) {
+    let map = content_context.by_data_id::<content::Map>(22).unwrap();
 
     commands
         .spawn(Node {

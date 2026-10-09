@@ -1,12 +1,13 @@
-use super::{Guid, Name, Progress, String, WcharPtr};
+use super::{Guid, Name, Progress, Ptr, String, WcharPtr};
 
+#[derive(Debug)]
 #[repr(C)]
 pub struct Map {
     pub contentGuid:     Guid,
     pub contentType:     u32,
     pub contentUid:      u32,
-    pub contentName:     *const Name,
-    pub contentFullName: *const Name,
+    pub contentName:     Ptr<Name>,
+    pub contentFullName: Ptr<Name>,
     pub dataId:          u32,
     pub r#type:          MapType,
     pub _030:            u32,
@@ -20,7 +21,7 @@ pub struct Map {
     pub fileMap:         WcharPtr,
     _070:                u32,
     _074:                u32,
-    pub file078:         WcharPtr,
+    pub _078:            WcharPtr,
     pub _080:            *const [()],
     pub _090:            WcharPtr,
     pub _098:            MapFlags,
@@ -87,6 +88,7 @@ pub struct Map {
     pub _220:            *const (),
 }
 
+#[derive(Debug)]
 #[repr(u32)]
 pub enum MapType {
     _0             = 0,
@@ -107,6 +109,7 @@ pub enum MapType {
 }
 
 bitflags::bitflags! {
+    #[derive(Debug)]
     #[repr(transparent)]
     pub struct MapFlags: u32 {
         const INSTANCE_CHECKPOINT_OVERRIDE = 1 << 17;

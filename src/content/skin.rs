@@ -1,12 +1,13 @@
-use super::{Guid, Name, WcharPtr};
+use super::{Guid, Name, Ptr, WcharPtr};
 
+#[derive(Debug)]
 #[repr(C)]
 pub struct Skin {
     pub contentGuid:     Guid,
     pub contentType:     u32,
     pub contentUid:      u32,
-    pub contentName:     *const Name,
-    pub contentFullName: *const Name,
+    pub contentName:     Ptr<Name>,
+    pub contentFullName: Ptr<Name>,
     pub dataId:          u32,
     _2c:                 u32,
     pub _30:             WcharPtr,
@@ -33,4 +34,9 @@ pub struct Skin {
     _a4:                 u32,
     pub _a8:             *const [()],
     pub _b8:             u32,
+    _bc:                 u32,
+    _c0:                 u32,
+    _c4:                 u32,
+    _c8:                 u32,
+    _cc:                 u32,
 }
