@@ -1,8 +1,13 @@
 use std::collections::HashMap;
 
 use ascalon_asset::packfile::cntc::PackContent;
-use bevy::asset::VisitAssetDependencies;
-use bevy::prelude::*;
+use bevy::app::{App, Plugin, Update};
+use bevy::asset::{AssetServer, Assets, Handle, VisitAssetDependencies};
+use bevy::ecs::resource::Resource;
+use bevy::ecs::schedule::IntoScheduleConfigs as _;
+use bevy::ecs::schedule::common_conditions::{not, resource_exists};
+use bevy::ecs::system::{Commands, Res};
+use bevy::ecs::world::{FromWorld, World};
 
 use crate::asset::Packfile;
 
@@ -48,26 +53,33 @@ pub fn content_dependencies_loaded(
     asset_server.are_dependencies_loaded(&*handles)
 }
 
-#[derive(Resource)]
-pub struct Content(HashMap<u32, *const u8>);
+#[derive(Resource, Default)]
+pub struct Content {
+    by_type:    HashMap<u32, Vec<*const u8>>,
+    by_guid:    HashMap<Guid, *const u8>,
+    by_data_id: HashMap<u32, *const u8>,
+}
 
 unsafe impl Sync for Content {}
-
 unsafe impl Send for Content {}
 
 impl Content {
-    pub fn iter<'a, T: ContentType + 'a>(&'a self) -> impl Iterator<Item = &'a T> + 'a {
-        self.0.iter().filter_map(|(&key, &ptr)| {
-            if key >> 22 != T::TYPE_ID {
-                return None;
-            }
-
-            unsafe { (ptr as *const T).as_ref() }
-        })
+    pub fn by_type<'a, T: ContentType + 'a>(&'a self) -> impl Iterator<Item = &'a T> {
+        self.by_type
+            .get(&T::ID)
+            .into_iter()
+            .flatten()
+            .map(|&ptr| unsafe { (ptr as *const T).as_ref() }.unwrap())
     }
 
-    pub fn get<T: ContentType>(&self, data_id: u32) -> Option<&T> {
-        unsafe { (*self.0.get(&(T::TYPE_ID << 22 | data_id))? as *const T).as_ref() }
+    pub fn by_guid<T: ContentType>(&self, guid: Guid) -> Option<&T> {
+        let ptr = *self.by_guid.get(&guid)?;
+        unsafe { (ptr as *const T).as_ref() }
+    }
+
+    pub fn by_data_id<T: ContentType>(&self, data_id: u32) -> Option<&T> {
+        let ptr = *self.by_data_id.get(&(T::ID << 22 | data_id))?;
+        unsafe { (ptr as *const T).as_ref() }
     }
 }
 
@@ -86,7 +98,7 @@ pub fn load_content(
         })
         .collect();
 
-    let mut index = HashMap::new();
+    let mut _content = Content::default();
 
     unsafe {
         for content in &content_all {
@@ -134,72 +146,42 @@ pub fn load_content(
 
             for entry in content.indexEntries.as_slice() {
                 let type_id = entry.r#type.get();
+                let type_info = &content_all[0].typeInfos.as_slice()[type_id as usize];
+
                 let data = &content.content.as_slice()[entry.offset.get() as usize..];
 
-                let type_info = &content_all[0].typeInfos.as_slice()[type_id as usize];
+                _content
+                    .by_type
+                    .entry(type_id)
+                    .or_default()
+                    .push(data.as_ptr());
+
+                let guid_offset = type_info.guidOffset.get();
+                if guid_offset != u32::MAX {
+                    let guid = std::ptr::read(data[guid_offset as usize..].as_ptr().cast::<Guid>());
+
+                    _content.by_guid.insert(guid, data.as_ptr());
+                }
 
                 let data_id_offset = type_info.dataIdOffset.get();
                 if data_id_offset != u32::MAX {
-                    let data_id = u32::from_le_bytes(
-                        data[data_id_offset as usize..][..4].try_into().unwrap(),
-                    );
-                    index.insert(type_id << 22 | data_id & 0x3FFFFF, data.as_ptr());
+                    let data_id =
+                        std::ptr::read(data[data_id_offset as usize..].as_ptr().cast::<u32>());
+
+                    _content
+                        .by_data_id
+                        .insert(type_id << 22 | data_id & 0x3FFFFF, data.as_ptr());
                 }
             }
         }
     }
 
-    commands.insert_resource(Content(index));
+    commands.insert_resource(_content);
 }
 
-#[repr(transparent)]
-pub struct WcharPtr(*const u16);
+pub use ascalon_asset::packfile::{Guid, WcharPtr};
 
-impl WcharPtr {
-    pub fn as_ptr(&self) -> *const u16 {
-        self.0
-    }
-
-    pub unsafe fn len(&self) -> usize {
-        let mut ptr = self.as_ptr();
-        if ptr.is_null() {
-            return 0;
-        }
-
-        unsafe {
-            while ptr.read_unaligned() != 0 {
-                ptr = ptr.add(1);
-            }
-
-            ptr.offset_from_unsigned(self.as_ptr())
-        }
-    }
-
-    pub unsafe fn as_slice(&self) -> &[u16] {
-        let ptr = self.as_ptr();
-        if ptr.is_null() {
-            return &[];
-        }
-
-        unsafe { std::slice::from_raw_parts(ptr, self.len()) }
-    }
-}
-
-impl WcharPtr {
-    pub unsafe fn file_id(&self) -> Option<u32> {
-        let [a, b, ..] = (unsafe { self.as_slice() }) else {
-            return None;
-        };
-
-        if *a <= 0xFF || *b <= 0xFF {
-            return None;
-        }
-
-        Some((u32::from(*a) - 0xFF) + (u32::from(*b) - 0x100) * 0xFF00)
-    }
-}
-
-#[repr(C)]
+#[repr(C, align(8))]
 pub struct String(WcharPtr, u32);
 
 #[repr(C)]
@@ -209,68 +191,75 @@ pub struct Name {
 }
 
 pub trait ContentType {
-    const TYPE_ID: u32;
+    const ID: u32;
 }
 
 mod achievement;
 pub use achievement::*;
 
-impl ContentType for AchievementDef {
-    const TYPE_ID: u32 = 0x00;
+impl ContentType for Achievement {
+    const ID: u32 = 0x00;
 }
 
 mod color;
 pub use color::*;
 
-impl ContentType for ColorDef {
-    const TYPE_ID: u32 = 0x09;
+impl ContentType for Color {
+    const ID: u32 = 0x09;
 }
 
 mod crafting_recipe;
 pub use crafting_recipe::*;
 
-impl ContentType for CraftingRecipeDef {
-    const TYPE_ID: u32 = 0x0C;
+impl ContentType for CraftingRecipe {
+    const ID: u32 = 0x0C;
 }
 
 mod currency;
 pub use currency::*;
 
-impl ContentType for CurrencyDef {
-    const TYPE_ID: u32 = 0x0E;
+impl ContentType for Currency {
+    const ID: u32 = 0x0E;
 }
 
 mod item;
 pub use item::*;
 
-impl ContentType for ItemDef {
-    const TYPE_ID: u32 = 0x23;
+impl ContentType for Item {
+    const ID: u32 = 0x23;
 }
 
 mod map;
 pub use map::*;
 
-impl ContentType for MapDef {
-    const TYPE_ID: u32 = 0x2D;
+impl ContentType for Map {
+    const ID: u32 = 0x2D;
 }
 
 mod progress;
 pub use progress::*;
 
-impl ContentType for ProgressDef {
-    const TYPE_ID: u32 = 0x35;
+impl ContentType for Progress {
+    const ID: u32 = 0x35;
 }
 
 mod skill;
 pub use skill::*;
 
-impl ContentType for SkillDef {
-    const TYPE_ID: u32 = 0x40;
+impl ContentType for Skill {
+    const ID: u32 = 0x40;
 }
 
 mod skin;
 pub use skin::*;
 
-impl ContentType for SkinDef {
-    const TYPE_ID: u32 = 0x42;
+impl ContentType for Skin {
+    const ID: u32 = 0x42;
+}
+
+mod configuration;
+pub use configuration::*;
+
+impl ContentType for Configuration {
+    const ID: u32 = 0x96;
 }

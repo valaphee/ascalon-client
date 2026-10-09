@@ -1,8 +1,8 @@
-use super::Name;
+use super::{Guid, Name};
 
 #[repr(C)]
-pub struct ColorDef {
-    pub contentGuid:     [u8; 16],
+pub struct Color {
+    pub contentGuid:     Guid,
     pub contentType:     u32,
     pub contentUid:      u32,
     pub contentName:     *const Name,

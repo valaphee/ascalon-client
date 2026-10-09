@@ -1,8 +1,8 @@
-use super::{Name, WcharPtr};
+use super::{Guid, Name, WcharPtr};
 
 #[repr(C)]
-pub struct SkillDef {
-    pub contentGuid:     [u8; 16],
+pub struct Skill {
+    pub contentGuid:     Guid,
     pub contentType:     u32,
     pub contentUid:      u32,
     pub contentName:     *const Name,

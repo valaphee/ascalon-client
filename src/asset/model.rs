@@ -28,7 +28,7 @@ impl AssetLoader for ModelLoader {
             ));
         }
 
-        todo!()
+        return Ok(WorldAsset::new(World::new()));
     }
 
     fn extensions(&self) -> &[&str] {

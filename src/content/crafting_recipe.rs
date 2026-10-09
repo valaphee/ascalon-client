@@ -1,8 +1,8 @@
-use super::{ItemDef, Name, ProgressDef};
+use super::{Guid, Item, Name, Progress};
 
 #[repr(C)]
-pub struct CraftingRecipeDef {
-    pub contentGuid:      [u8; 16],
+pub struct CraftingRecipe {
+    pub contentGuid:      Guid,
     pub contentType:      u32,
     pub contentUid:       u32,
     pub contentName:      *const Name,
@@ -10,19 +10,19 @@ pub struct CraftingRecipeDef {
     pub dataId:           u32,
     pub _2c:              u32,
     pub ingredients:      *const [()],
-    pub outputItem:       *const ItemDef,
+    pub outputItem:       *const Item,
     pub outputItemCount:  u32,
     pub rating:           u32,
     pub _50:              u32,
     pub time:             u32,
     pub _58:              u32,
     _5c:                  u32,
-    pub _60:              *const ProgressDef,
+    pub _60:              *const Progress,
     pub _68:              *const (),
     _70:                  u32,
     _74:                  u32,
     pub guildIngredients: *const [()],
-    pub item:             *const ItemDef,
+    pub item:             *const Item,
     pub _90:              *const (),
     _98:                  u32,
     _9c:                  u32,

@@ -40,7 +40,7 @@ fn setup(mut commands: Commands) {
 }
 
 fn debug(mut commands: Commands, content: Res<Content>, asset_server: Res<AssetServer>) {
-    let map = content.get::<content::MapDef>(22).unwrap();
+    let map = content.by_data_id::<content::Map>(22).unwrap();
 
     commands
         .spawn(Node {
