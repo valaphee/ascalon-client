@@ -80,13 +80,11 @@ pub fn load_content(
                 let asset = &assets.get(handle).unwrap();
                 assert_eq!(asset.r#type(), *b"cntc");
 
-                let Some(content) = asset
+                let content = asset
                     .chunks()
                     .find(|chunk| chunk.name() == *b"Main")
                     .map(|chunk| unsafe { &*(chunk.bytes().as_ptr() as *const PackContent) })
-                else {
-                    panic!()
-                };
+                    .unwrap();
 
                 content
             })

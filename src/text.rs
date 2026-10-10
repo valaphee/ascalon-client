@@ -135,13 +135,11 @@ fn load_text_pack(
     };
     assert_eq!(asset.r#type(), *b"txtm");
 
-    let Some(manifest) = asset
+    let manifest = asset
         .chunks()
         .find(|chunk| chunk.name() == *b"txtm")
         .map(|chunk| unsafe { &*(chunk.bytes().as_ptr() as *const TextPackManifest) })
-    else {
-        panic!()
-    };
+        .unwrap();
 
     commands.insert_resource(TextPack::new(manifest));
 }
