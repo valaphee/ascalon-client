@@ -1,4 +1,4 @@
-use super::{Guid, Item, Name, Progress, Ptr};
+use super::{ContentType, Guid, Item, Name, Progress, Ptr};
 
 #[derive(Debug)]
 #[repr(C)]
@@ -30,4 +30,8 @@ pub struct CraftingRecipe {
     _a0:                  u32,
     _a4:                  u32,
     pub _a8:              *const (),
+}
+
+impl ContentType for CraftingRecipe {
+    const ID: u32 = 12;
 }

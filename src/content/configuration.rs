@@ -1,4 +1,4 @@
-use super::{Content, Guid, Name, Ptr};
+use super::{Content, ContentType, Guid, Name, Ptr};
 
 #[derive(Debug)]
 #[repr(C)]
@@ -10,4 +10,8 @@ pub struct Configuration {
     pub contentFullName: Ptr<Name>,
     pub r#type:          u32,
     pub value:           Content,
+}
+
+impl ContentType for Configuration {
+    const ID: u32 = 150;
 }

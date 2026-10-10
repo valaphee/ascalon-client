@@ -114,6 +114,11 @@ pub fn load_content(
 
     unsafe {
         for content in &content_all {
+            assert_eq!(
+                ContentFlags::from_bits_retain(content.flags.get()),
+                ContentFlags::MANGLED
+            );
+
             let data = content.content.as_ptr();
 
             for fixup in content.localOffsets.as_slice() {
@@ -213,6 +218,15 @@ pub fn load_content(
     commands.insert_resource(context);
 }
 
+bitflags::bitflags! {
+    #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+    #[repr(transparent)]
+    pub struct ContentFlags: u32 {
+        const ENCRYPTED = 1 << 0;
+        const MANGLED   = 1 << 1;
+    }
+}
+
 pub use ascalon_asset::packfile::{Guid, Token32, Token64, WcharPtr};
 
 #[repr(transparent)]
@@ -278,128 +292,59 @@ pub trait ContentType {
 mod achievement;
 pub use achievement::*;
 
-impl ContentType for Achievement {
-    const ID: u32 = 0;
-}
-
 mod color;
 pub use color::*;
-
-impl ContentType for Color {
-    const ID: u32 = 9;
-}
-
-mod crafting_recipe;
-pub use crafting_recipe::*;
-
-impl ContentType for CraftingRecipe {
-    const ID: u32 = 12;
-}
-
-mod currency;
-pub use currency::*;
-
-impl ContentType for Currency {
-    const ID: u32 = 14;
-}
-
-mod emote;
-pub use emote::*;
-
-impl ContentType for Emote {
-    const ID: u32 = 19;
-}
-
-mod item;
-pub use item::*;
-
-impl ContentType for Item {
-    const ID: u32 = 35;
-}
-
-mod mail;
-pub use mail::*;
-
-impl ContentType for Mail {
-    const ID: u32 = 43;
-}
-
-mod map;
-pub use map::*;
-
-impl ContentType for Map {
-    const ID: u32 = 45;
-}
-
-mod progress;
-pub use progress::*;
-
-impl ContentType for Progress {
-    const ID: u32 = 53;
-}
-
-mod sector;
-pub use sector::*;
-
-impl ContentType for Sector {
-    const ID: u32 = 63;
-}
-
-mod skill;
-pub use skill::*;
-
-impl ContentType for Skill {
-    const ID: u32 = 64;
-}
-
-mod skin;
-pub use skin::*;
-
-impl ContentType for Skin {
-    const ID: u32 = 66;
-}
-
-mod r#trait;
-pub use r#trait::*;
-
-impl ContentType for Trait {
-    const ID: u32 = 77;
-}
 
 mod configuration;
 pub use configuration::*;
 
-impl ContentType for Configuration {
-    const ID: u32 = 150;
-}
+mod crafting_recipe;
+pub use crafting_recipe::*;
+
+mod currency;
+pub use currency::*;
 
 mod effect;
 pub use effect::*;
 
-impl ContentType for Effect {
-    const ID: u32 = 183;
-}
+mod emote;
+pub use emote::*;
+
+mod item;
+pub use item::*;
+
+mod mail;
+pub use mail::*;
+
+mod map;
+pub use map::*;
 
 mod marker;
 pub use marker::*;
 
-impl ContentType for Marker {
-    const ID: u32 = 293;
-}
+mod progress;
+pub use progress::*;
+
+mod sector;
+pub use sector::*;
+
+mod skill;
+pub use skill::*;
+
+mod skin;
+pub use skin::*;
+
+mod species;
+pub use species::*;
 
 mod table;
 pub use table::*;
 
-impl ContentType for Table {
-    const ID: u32 = 394;
-}
-
 mod team;
 pub use team::*;
 
-impl ContentType for Team {
-    const ID: u32 = 401;
-}
+mod r#trait;
+pub use r#trait::*;
 
 #[rustfmt::skip]
 #[derive(Debug)]
@@ -472,7 +417,7 @@ pub enum Content {
     Skill(Ptr<Skill>)                     = 64,
     _65                                   = 65,
     Skin(Ptr<Skin>)                       = 66,
-    _67                                   = 67,
+    Species(Ptr<Species>)                 = 67,
     _68                                   = 68,
     _69                                   = 69,
     _70                                   = 70,
@@ -552,7 +497,7 @@ pub enum Content {
     _144                                  = 144,
     _145                                  = 145,
     _146                                  = 146,
-    _147                                  = 147,
+    ColorPalette(Ptr<ColorPalette>)       = 147,
     _148                                  = 148,
     _149                                  = 149,
     Configuration(Ptr<Configuration>)     = 150,
@@ -799,7 +744,7 @@ pub enum Content {
     _391                                  = 391,
     _392                                  = 392,
     _393                                  = 393,
-    Table(Ptr<Table>)                     = 394,
+    Table(Ptr<TableInt>)                  = 394,
     _395                                  = 395,
     _396                                  = 396,
     _397                                  = 397,

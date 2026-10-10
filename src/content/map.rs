@@ -1,4 +1,4 @@
-use super::{Guid, Name, Progress, Ptr, String, WcharPtr};
+use super::{ContentType, Guid, Mail, Name, Progress, Ptr, String, WcharPtr};
 
 #[derive(Debug)]
 #[repr(C)]
@@ -31,7 +31,7 @@ pub struct Map {
     pub levelMin:        u32,
     pub levelMax:        u32,
     pub _0b0:            String,
-    pub _0c0:            *const (),
+    pub _0c0:            *const Mail,
     pub _0c8:            *const (),
     pub _0d0:            *const (),
     pub _0d8:            String,
@@ -86,6 +86,10 @@ pub struct Map {
     pub _200:            *const [()],
     pub _210:            *const [()],
     pub _220:            *const (),
+}
+
+impl ContentType for Map {
+    const ID: u32 = 45;
 }
 
 #[derive(Debug)]

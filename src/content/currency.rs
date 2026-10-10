@@ -1,4 +1,4 @@
-use super::{Guid, Name, Ptr, WcharPtr};
+use super::{ContentType, Guid, Name, Progress, Ptr, WcharPtr};
 
 #[derive(Debug)]
 #[repr(C)]
@@ -24,5 +24,9 @@ pub struct Currency {
     pub _60:             *const (),
     pub _68:             *const (),
     pub _70:             *const (),
-    pub _78:             *const (),
+    pub _78:             *const Progress,
+}
+
+impl ContentType for Currency {
+    const ID: u32 = 14;
 }

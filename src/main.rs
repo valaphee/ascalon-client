@@ -44,7 +44,9 @@ fn debug(
     content_context: Res<ContentContext>,
     asset_server: Res<AssetServer>,
 ) {
-    let map = content_context.by_data_id::<content::Map>(22).unwrap();
+    let map = content_context
+        .by_name::<content::Map>("Gw2.Common.Map.Valley Divinity")
+        .unwrap();
 
     commands
         .spawn(Node {

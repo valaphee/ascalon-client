@@ -1,4 +1,4 @@
-use super::{Guid, Name, Ptr, WcharPtr};
+use super::{ContentType, Guid, Name, Ptr, WcharPtr};
 
 #[derive(Debug)]
 #[repr(C)]
@@ -39,4 +39,8 @@ pub struct Skin {
     _c4:                 u32,
     _c8:                 u32,
     _cc:                 u32,
+}
+
+impl ContentType for Skin {
+    const ID: u32 = 66;
 }

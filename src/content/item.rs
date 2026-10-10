@@ -1,4 +1,4 @@
-use super::{Guid, Name, Progress, Ptr, WcharPtr};
+use super::{ContentType, Guid, Name, Progress, Ptr, WcharPtr};
 
 #[derive(Debug)]
 #[repr(C)]
@@ -34,6 +34,10 @@ pub struct Item {
     _a4:                 u32,
     _a8:                 u32,
     _ac:                 u32,
+}
+
+impl ContentType for Item {
+    const ID: u32 = 35;
 }
 
 #[derive(Debug)]

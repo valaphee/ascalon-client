@@ -1,4 +1,4 @@
-use super::{Guid, Name, Ptr, String};
+use super::{ContentType, Guid, Name, Ptr, String};
 
 #[derive(Debug)]
 #[repr(C)]
@@ -30,4 +30,8 @@ pub struct Mail {
     pub _a0:             u32,
     _a4:                 u32,
     pub _a8:             String,
+}
+
+impl ContentType for Mail {
+    const ID: u32 = 43;
 }

@@ -1,4 +1,4 @@
-use super::{Guid, Name, Ptr};
+use super::{ContentType, Guid, Name, Ptr};
 
 #[derive(Debug)]
 #[repr(C)]
@@ -24,6 +24,10 @@ pub struct Progress {
     pub _64:             u32,
     pub _68:             u32,
     pub _6c:             u32,
+}
+
+impl ContentType for Progress {
+    const ID: u32 = 53;
 }
 
 #[derive(Debug)]

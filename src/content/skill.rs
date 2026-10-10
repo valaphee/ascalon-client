@@ -1,4 +1,4 @@
-use super::{Guid, Name, Ptr, WcharPtr};
+use super::{ContentType, Guid, Name, Ptr, WcharPtr};
 
 #[derive(Debug)]
 #[repr(C)]
@@ -27,7 +27,11 @@ pub struct Skill {
     pub _98:             u32,
     _9c:                 u32,
     pub _a0:             *const [()],
-    pub _b0:             *const (),
+    pub _b0:             *const Skill,
+}
+
+impl ContentType for Skill {
+    const ID: u32 = 64;
 }
 
 bitflags::bitflags! {

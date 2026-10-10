@@ -1,4 +1,4 @@
-use super::{Guid, Item, Name, Progress, Ptr, WcharPtr};
+use super::{ContentType, Guid, Item, Name, Progress, Ptr, WcharPtr};
 
 #[derive(Debug)]
 #[repr(C)]
@@ -45,4 +45,8 @@ pub struct Achievement {
     pub _f0:             *const (),
     pub _f8:             u32,
     _fc:                 u32,
+}
+
+impl ContentType for Achievement {
+    const ID: u32 = 0;
 }

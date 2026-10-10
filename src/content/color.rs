@@ -1,4 +1,4 @@
-use super::{Guid, Name, Ptr};
+use super::{ContentType, Guid, Name, Ptr};
 
 #[derive(Debug)]
 #[repr(C)]
@@ -15,6 +15,10 @@ pub struct Color {
     _44:                 u32,
     pub textName:        u32,
     _4c:                 u32,
+}
+
+impl ContentType for Color {
+    const ID: u32 = 9;
 }
 
 #[derive(Debug)]
@@ -36,4 +40,23 @@ pub enum ColorMaterialType {
     Leather = 2,
     Metal   = 3,
     Fur     = 4,
+}
+
+#[derive(Debug)]
+#[repr(C)]
+pub struct ColorPalette {
+    pub contentGuid:     Guid,
+    pub contentType:     u32,
+    pub contentUid:      u32,
+    pub contentName:     Ptr<Name>,
+    pub contentFullName: Ptr<Name>,
+    pub _28:             u32,
+    pub _2c:             u32,
+    pub _30:             *const (),
+    pub _38:             u32,
+    pub _3c:             u32,
+}
+
+impl ContentType for ColorPalette {
+    const ID: u32 = 147;
 }
