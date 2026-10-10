@@ -10,15 +10,12 @@ repository = "https://github.com/valaphee/ascalon-client"
 
 [dependencies]
 bitflags = "2"
-zerocopy = "0.8"
-
-sha2 = "0.11"
 
 bevy = { version = "0.20", features = ["2d", "3d", "ui", "free_camera"] }
 
-ascalon-asset = { git = "https://github.com/valaphee/ascalon.git", rev = "112855ba425c316675a5b8baf8ce3536700313f6" }
-ascalon-network = { git = "https://github.com/valaphee/ascalon.git", rev = "112855ba425c316675a5b8baf8ce3536700313f6" }
-ascalon-protocol = { git = "https://github.com/valaphee/ascalon.git", rev = "112855ba425c316675a5b8baf8ce3536700313f6" }
+ascalon-asset = { git = "https://github.com/valaphee/ascalon.git", rev = "15430e40c6641e3bfaed77fab967b47f075578bf" }
+ascalon-network = { git = "https://github.com/valaphee/ascalon.git", rev = "15430e40c6641e3bfaed77fab967b47f075578bf" }
+ascalon-protocol = { git = "https://github.com/valaphee/ascalon.git", rev = "15430e40c6641e3bfaed77fab967b47f075578bf" }
 
 [profile.dev]
 opt-level = 1

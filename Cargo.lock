@@ -298,13 +298,14 @@ checksum = "175571dd1d178ced59193a6fc02dde1b972eb0bc56c892cde9beeceac5bf0f6b"
 [[package]]
 name = "ascalon-asset"
 version = "0.1.0"
-source = "git+https://github.com/valaphee/ascalon.git?rev=112855ba425c316675a5b8baf8ce3536700313f6#112855ba425c316675a5b8baf8ce3536700313f6"
+source = "git+https://github.com/valaphee/ascalon.git?rev=15430e40c6641e3bfaed77fab967b47f075578bf#15430e40c6641e3bfaed77fab967b47f075578bf"
 dependencies = [
  "ascalon-packfile-schema",
  "bitflags 2.13.2",
  "proc-macro2",
  "quote",
  "rc4",
+ "sha2",
  "syn 2.0.119",
  "zerocopy",
 ]
@@ -318,14 +319,12 @@ dependencies = [
  "ascalon-protocol",
  "bevy",
  "bitflags 2.13.2",
- "sha2",
- "zerocopy",
 ]
 
 [[package]]
 name = "ascalon-network"
 version = "0.1.0"
-source = "git+https://github.com/valaphee/ascalon.git?rev=112855ba425c316675a5b8baf8ce3536700313f6#112855ba425c316675a5b8baf8ce3536700313f6"
+source = "git+https://github.com/valaphee/ascalon.git?rev=15430e40c6641e3bfaed77fab967b47f075578bf#15430e40c6641e3bfaed77fab967b47f075578bf"
 dependencies = [
  "bytes",
  "lz4_flex",
@@ -337,7 +336,7 @@ dependencies = [
 [[package]]
 name = "ascalon-packfile-schema"
 version = "0.1.0"
-source = "git+https://github.com/valaphee/ascalon.git?rev=112855ba425c316675a5b8baf8ce3536700313f6#112855ba425c316675a5b8baf8ce3536700313f6"
+source = "git+https://github.com/valaphee/ascalon.git?rev=15430e40c6641e3bfaed77fab967b47f075578bf#15430e40c6641e3bfaed77fab967b47f075578bf"
 dependencies = [
  "quick-xml 0.42.0",
 ]
@@ -345,7 +344,7 @@ dependencies = [
 [[package]]
 name = "ascalon-protocol"
 version = "0.1.0"
-source = "git+https://github.com/valaphee/ascalon.git?rev=112855ba425c316675a5b8baf8ce3536700313f6#112855ba425c316675a5b8baf8ce3536700313f6"
+source = "git+https://github.com/valaphee/ascalon.git?rev=15430e40c6641e3bfaed77fab967b47f075578bf#15430e40c6641e3bfaed77fab967b47f075578bf"
 dependencies = [
  "ascalon-protocol-schema",
  "bytes",
@@ -355,7 +354,7 @@ dependencies = [
 [[package]]
 name = "ascalon-protocol-schema"
 version = "0.1.0"
-source = "git+https://github.com/valaphee/ascalon.git?rev=112855ba425c316675a5b8baf8ce3536700313f6#112855ba425c316675a5b8baf8ce3536700313f6"
+source = "git+https://github.com/valaphee/ascalon.git?rev=15430e40c6641e3bfaed77fab967b47f075578bf#15430e40c6641e3bfaed77fab967b47f075578bf"
 dependencies = [
  "quick-xml 0.42.0",
 ]

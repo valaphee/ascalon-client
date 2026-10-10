@@ -1,3 +1,4 @@
+use std::ops::Deref;
 use std::path::Path;
 
 use ascalon_asset::archive::Archive;
@@ -80,7 +81,15 @@ impl Plugin for AssetLoaderPlugin {
 }
 
 #[derive(Asset, TypePath)]
-pub struct Packfile(pub ascalon_asset::packfile::Packfile);
+pub struct Packfile(ascalon_asset::packfile::Packfile);
+
+impl Deref for Packfile {
+    type Target = ascalon_asset::packfile::Packfile;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
 
 #[derive(Default, TypePath)]
 struct PackfileLoader;

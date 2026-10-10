@@ -109,9 +109,21 @@ struct TextPack {
     strings:  Box<[OnceLock<Handle<Strings>>]>,
 }
 
+unsafe impl Send for TextPack {}
 unsafe impl Sync for TextPack {}
 
-unsafe impl Send for TextPack {}
+impl TextPack {
+    fn new(manifest: &TextPackManifest) -> Self {
+        let language = unsafe { &manifest.languages.as_slice()[0] };
+        let filenames = unsafe { language.filenames.as_slice() };
+
+        Self {
+            manifest: manifest as *const _,
+            language: 0,
+            strings:  vec![OnceLock::new(); filenames.len()].into_boxed_slice(),
+        }
+    }
+}
 
 fn load_text_pack(
     mut commands: Commands,
@@ -121,19 +133,17 @@ fn load_text_pack(
     let Some(asset) = assets.get(&handle.0) else {
         return;
     };
+    assert_eq!(asset.r#type(), *b"txtm");
 
-    let packfile = &asset.0;
-    let chunk = packfile.chunks().next().unwrap();
+    let Some(manifest) = asset
+        .chunks()
+        .find(|chunk| chunk.name() == *b"txtm")
+        .map(|chunk| unsafe { &*(chunk.bytes().as_ptr() as *const TextPackManifest) })
+    else {
+        panic!()
+    };
 
-    let manifest = unsafe { &*(chunk.bytes().as_ptr() as *const TextPackManifest) };
-    let language = unsafe { &manifest.languages.as_slice()[0] };
-    let filenames = unsafe { language.filenames.as_slice() };
-
-    commands.insert_resource(TextPack {
-        manifest: manifest as *const _,
-        language: 0,
-        strings:  vec![OnceLock::new(); filenames.len()].into_boxed_slice(),
-    });
+    commands.insert_resource(TextPack::new(manifest));
 }
 
 #[derive(Component)]

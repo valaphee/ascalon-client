@@ -27,7 +27,7 @@ impl AssetLoader for MapLoader {
         let bytes = std::mem::take(&mut reader.bytes);
 
         let packfile = Packfile::new(bytes)?;
-        if &packfile.r#type() != b"mapc" {
+        if packfile.r#type() != *b"mapc" {
             return Err(std::io::Error::new(
                 std::io::ErrorKind::InvalidData,
                 "invalid magic",
@@ -65,7 +65,7 @@ fn load_environment(load_context: &mut LoadContext<'_>, packfile: &Packfile, wor
 fn load_terrain(load_context: &mut LoadContext<'_>, packfile: &Packfile, world: &mut World) {
     let Some(param) = packfile
         .chunks()
-        .find(|chunk| &chunk.name() == b"parm")
+        .find(|chunk| chunk.name() == *b"parm")
         .map(|chunk| unsafe { &*(chunk.bytes().as_ptr() as *const MapParam) })
     else {
         return;
@@ -184,7 +184,7 @@ fn load_terrain(load_context: &mut LoadContext<'_>, packfile: &Packfile, world: 
 fn load_props(load_context: &mut LoadContext<'_>, packfile: &Packfile, world: &mut World) {
     let Some(prop) = packfile
         .chunks()
-        .find(|chunk| &chunk.name() == b"prp2")
+        .find(|chunk| chunk.name() == *b"prp2")
         .map(|chunk| unsafe { &*(chunk.bytes().as_ptr() as *const PackMapPropV21) })
     else {
         return;
@@ -293,7 +293,7 @@ fn load_props(load_context: &mut LoadContext<'_>, packfile: &Packfile, world: &m
 fn load_lights(_load_context: &mut LoadContext<'_>, packfile: &Packfile, world: &mut World) {
     let Some(lights) = packfile
         .chunks()
-        .find(|chunk| &chunk.name() == b"lght")
+        .find(|chunk| chunk.name() == *b"lght")
         .map(|chunk| unsafe { &*(chunk.bytes().as_ptr() as *const PackMapLights) })
     else {
         return;

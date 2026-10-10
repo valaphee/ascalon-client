@@ -4,7 +4,7 @@
 use bevy::prelude::*;
 
 use crate::asset::{AssetLoaderPlugin, AssetSourcePlugin};
-use crate::content::{ContentContext, ContentPlugin};
+use crate::content::{ContentPlugin, ContentServer};
 use crate::render::RenderPlugin;
 use crate::text::TextPlugin;
 
@@ -27,7 +27,7 @@ fn main() {
         bevy::camera_controller::free_camera::FreeCameraPlugin,
     ))
     .add_systems(Startup, setup)
-    .add_systems(Update, debug.run_if(resource_added::<ContentContext>));
+    .add_systems(Update, debug.run_if(resource_added::<ContentServer>));
 
     app.run();
 }
@@ -41,11 +41,11 @@ fn setup(mut commands: Commands) {
 
 fn debug(
     mut commands: Commands,
-    content_context: Res<ContentContext>,
+    content_server: Res<ContentServer>,
     asset_server: Res<AssetServer>,
 ) {
-    let map = content_context
-        .by_name::<content::Map>("Gw2.Common.Map.Valley Divinity")
+    let map = content_server
+        .by_name::<ascalon_asset::content::Map>("Gw2.Common.Map.Valley Divinity")
         .unwrap();
 
     commands
@@ -58,7 +58,6 @@ fn debug(
         })
         .with_children(|parent| {
             parent.spawn((text::Text::new(map.textName), Text::default()));
-
             parent.spawn((text::Text::new(map.textDescription), Text::default()));
         });
 

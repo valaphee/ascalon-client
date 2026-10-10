@@ -21,7 +21,7 @@ impl AssetLoader for ModelLoader {
         let bytes = std::mem::take(&mut reader.bytes);
 
         let packfile = Packfile::new(bytes)?;
-        if &packfile.r#type() != b"MODL" {
+        if packfile.r#type() != *b"MODL" {
             return Err(std::io::Error::new(
                 std::io::ErrorKind::InvalidData,
                 "invalid magic",
