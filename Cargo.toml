@@ -13,9 +13,9 @@ bitflags = "2"
 
 bevy = { version = "0.20", features = ["2d", "3d", "ui", "free_camera"] }
 
-ascalon-asset = { git = "https://github.com/valaphee/ascalon.git", rev = "fe85a8c09f21294e76f42be2c3ea7c22404fd641" }
-ascalon-network = { git = "https://github.com/valaphee/ascalon.git", rev = "fe85a8c09f21294e76f42be2c3ea7c22404fd641" }
-ascalon-protocol = { git = "https://github.com/valaphee/ascalon.git", rev = "fe85a8c09f21294e76f42be2c3ea7c22404fd641" }
+ascalon-asset = { git = "https://github.com/valaphee/ascalon.git", rev = "39bb880e36003ee11b6280d4cfcc86f43f8270da" }
+ascalon-network = { git = "https://github.com/valaphee/ascalon.git", rev = "39bb880e36003ee11b6280d4cfcc86f43f8270da" }
+ascalon-protocol = { git = "https://github.com/valaphee/ascalon.git", rev = "39bb880e36003ee11b6280d4cfcc86f43f8270da" }
 
 [profile.dev]
 opt-level = 1
