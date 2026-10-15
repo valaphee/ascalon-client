@@ -80,64 +80,45 @@ fn load_terrain(load_context: &mut LoadContext<'_>, packfile: &Packfile, world: 
     };
 
     let [min_x, min_y, max_x, max_y] = param.rect.map(|v| v.get() * unit::INCH_TO_M);
-    let [dim_x, dim_y] = terrain.dims.map(|v| v.get() as f32 * unit::INCH_TO_M);
+    let [dim_x, dim_y] = terrain.dims.map(|v| v.get() as usize);
 
-    let height_map_array = unsafe { terrain.heightMapArray.as_slice() };
-    let chunk_array = unsafe { terrain.chunkArray.as_slice() };
-
-    let chunk_count_x = (dim_x * chunk_array.len() as f32 / dim_y).sqrt() as usize;
-    let chunk_count_y = chunk_array.len() / chunk_count_x;
-
-    let chunk_size_x = (max_x - min_x) / chunk_count_x as f32;
-    let chunk_size_y = (max_y - min_y) / chunk_count_y as f32;
+    let height_map_array: Vec<_> = unsafe { terrain.heightMapArray.as_slice() }
+        .iter()
+        .map(|v| v.get() * unit::INCH_TO_M)
+        .collect();
 
     let vertices_per_chunk_side = terrain.verticesPerChunkSide.get() as usize;
     let vertex_count = vertices_per_chunk_side + 1;
     let sample_count = vertices_per_chunk_side + 3;
 
+    let chunk_count_x = dim_x / vertices_per_chunk_side;
+    let chunk_count_y = dim_y / vertices_per_chunk_side;
+
+    let chunk_size_x = (max_x - min_x) / chunk_count_x as f32;
+    let chunk_size_y = (max_y - min_y) / chunk_count_y as f32;
+
     let step_x = chunk_size_x / vertices_per_chunk_side as f32;
     let step_y = chunk_size_y / vertices_per_chunk_side as f32;
 
-    let mut indices = Vec::with_capacity(
-        2 * vertex_count * vertices_per_chunk_side + 2 * (vertices_per_chunk_side - 1),
-    );
+    let mut indices = Vec::with_capacity(vertices_per_chunk_side * vertices_per_chunk_side * 6);
 
     for y in 0..vertices_per_chunk_side {
-        let reversed = y % 2 != 0;
-
-        for x in 0..vertex_count {
-            let x = if reversed {
-                vertices_per_chunk_side - x
-            } else {
-                x
-            };
-
-            let top = (y * vertex_count + x) as u16;
-            let bottom = top + vertex_count as u16;
-
-            if y > 0 && x == if reversed { vertices_per_chunk_side } else { 0 } {
-                indices.extend_from_slice(&[
-                    *indices.last().unwrap(),
-                    if reversed { bottom } else { top },
-                ]);
-            }
-
-            if reversed {
-                indices.extend_from_slice(&[bottom, top]);
-            } else {
-                indices.extend_from_slice(&[top, bottom]);
-            }
+        for x in 0..vertices_per_chunk_side {
+            let a = (y * vertex_count + x) as u16;
+            let b = a + 1;
+            let c = a + vertex_count as u16;
+            let d = c + 1;
+            indices.extend_from_slice(&[a, c, b, b, c, d]);
         }
     }
 
-    let material = load_context.add_labeled_asset("terrain_material", StandardMaterial::default());
+    let material = load_context.add_labeled_asset("Terrain/Material", StandardMaterial::default());
 
     for (index, samples) in height_map_array
         .chunks_exact(sample_count * sample_count)
-        .take(chunk_array.len())
         .enumerate()
     {
-        let height = |x: usize, y: usize| samples[y * sample_count + x].get() * unit::INCH_TO_M;
+        let height = |x: usize, y: usize| samples[y * sample_count + x];
 
         let mut positions = Vec::with_capacity(vertex_count * vertex_count);
         let mut normals = Vec::with_capacity(vertex_count * vertex_count);
@@ -160,7 +141,7 @@ fn load_terrain(load_context: &mut LoadContext<'_>, packfile: &Packfile, world: 
         }
 
         let mesh = Mesh::new(
-            PrimitiveTopology::TriangleStrip,
+            PrimitiveTopology::TriangleList,
             RenderAssetUsages::default(),
         )
         .with_inserted_attribute(Mesh::ATTRIBUTE_POSITION, positions)
@@ -174,7 +155,7 @@ fn load_terrain(load_context: &mut LoadContext<'_>, packfile: &Packfile, world: 
         let center_y = min_y + (chunk_y as f32 + 0.5) * chunk_size_y;
 
         world.spawn((
-            Mesh3d(load_context.add_labeled_asset(format!("terrain_{index}_mesh"), mesh)),
+            Mesh3d(load_context.add_labeled_asset(format!("Terrain/Mesh{index}"), mesh)),
             MeshMaterial3d(material.clone()),
             Transform::from_xyz(center_x, 0.0, -center_y),
         ));

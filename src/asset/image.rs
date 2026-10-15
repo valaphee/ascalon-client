@@ -55,7 +55,12 @@ impl AssetLoader for ImageLoader {
                 TextureFormat::Bc7RgbaUnorm,
                 Fmt::COLOR | Fmt::ALPHA | Fmt::PLAIN,
             ),
-            _ => return Err(std::io::ErrorKind::InvalidData.into()),
+            _ => {
+                return Err(std::io::Error::new(
+                    std::io::ErrorKind::InvalidData,
+                    "invalid format",
+                ));
+            }
         };
 
         let (block_width, block_height) = format.block_dimensions();

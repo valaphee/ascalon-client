@@ -1,6 +1,7 @@
 #![feature(f16, read_array, read_le)]
 #![allow(dead_code)]
 
+use bevy::image::{ImageAddressMode, ImageSamplerDescriptor};
 use bevy::prelude::*;
 
 use crate::asset::{AssetLoaderPlugin, AssetSourcePlugin};
@@ -19,7 +20,14 @@ fn main() {
 
     app.add_plugins((
         AssetSourcePlugin,
-        DefaultPlugins,
+        DefaultPlugins.set(ImagePlugin {
+            default_sampler: ImageSamplerDescriptor {
+                address_mode_u: ImageAddressMode::Repeat,
+                address_mode_v: ImageAddressMode::Repeat,
+                address_mode_w: ImageAddressMode::Repeat,
+                ..default()
+            },
+        }),
         AssetLoaderPlugin,
         ContentPlugin,
         TextPlugin,
